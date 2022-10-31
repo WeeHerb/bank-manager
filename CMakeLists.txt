@@ -1,19 +1,10 @@
 cmake_minimum_required(VERSION 3.23)
-project(bankman)
+project(bankmanager)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(./tui)
+include_directories(./)
 
-aux_source_directory(./src BANK_SRC)
+file(GLOB BANK_SRC ./core/*.cpp ./tui/*.cpp ./db/*.cpp)
 
 add_executable(${PROJECT_NAME} ${BANK_SRC})
-add_dependencies(${PROJECT_NAME} tui)
-target_include_directories(${PROJECT_NAME} PUBLIC ./tui/src)
-target_link_libraries(${PROJECT_NAME} PUBLIC tui)
-
-
-
-
-
-
