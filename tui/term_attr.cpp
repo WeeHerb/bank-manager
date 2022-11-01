@@ -2,8 +2,11 @@
 // Created by mslxl on 10/30/2022.
 //
 
-#include "tui/term_attr.h"
 #include <iostream>
+
+
+#include "tui/term_attr.h"
+#include "tui/widget.h"
 
 void tui::TermAttr::set_text_attr(const tui::color &c) const {
     SetConsoleTextAttribute(hwnd, c.code);
@@ -77,5 +80,11 @@ void tui::TermAttr::draw_border(std::ostream& stream) {
 void tui::TermAttr::init(std::ostream &stream) {
     refresh_size();
     clear(stream);
+}
+
+void tui::TermAttr::proceed(tui::widget &widget, std::ostream& stream) {
+    tui::panel panel(short(cols), short(rows), widget);
+    panel.notify();
+    panel.draw(stream, *this, Coop(1,1));
 }
 

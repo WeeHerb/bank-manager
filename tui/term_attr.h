@@ -12,7 +12,9 @@
 #include "tui/color.h"
 
 namespace tui {
-    class TermAttr {
+    struct widget;
+
+    class TermAttr{
     public:
         HANDLE hwnd;
 
@@ -27,12 +29,16 @@ namespace tui {
 
         void set_text_attr(const color &c) const;
 
-        void init(std::ostream& stream);
-        void clear(std::ostream& stream);
+        void init(std::ostream &stream);
+
+        void clear(std::ostream &stream);
 
         char wait_key();
 
+        void proceed(widget& widget,std::ostream& stream);
+
+
     private:
-        void draw_border(std::ostream& stream);
+        void draw_border(std::ostream &stream);
     };
 }

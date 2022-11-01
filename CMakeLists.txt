@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(./)
 
-file(GLOB BANK_SRC ./core/*.cpp ./tui/*.cpp ./db/*.cpp)
+file(GLOB BANK_SRC core/*.cpp tui/*.cpp db/*.cpp)
+
+foreach(ITEM ${BANK_SRC})
+    message(${ITEM})
+endforeach()
 
 add_executable(${PROJECT_NAME} ${BANK_SRC})
