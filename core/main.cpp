@@ -18,15 +18,16 @@ int main() {
     using namespace tui;
 
     term.proceed(std::make_shared<center>(
-            std::make_shared<bg>(
-                    tui::color(BACKGROUND_GREEN) | tui::FG_COMMON,
+            std::make_shared<attr>(
+                    tui::color(BACKGROUND_GREEN) | tui::color(FOREGROUND_RED),
                     std::make_shared<box>(
-                            std::make_shared<text>("Bank Man")
+                            std::make_shared<attr>(
+                                    tui::color(BACKGROUND_GREEN) | tui::FG_COMMON | tui::FG_INTENSITY,
+                                    std::make_shared<text>("Bank Man")
+                            )
                     )
             )
-
     ), std::cout);
-
 
     term.wait_key();
     term.refresh_size();
