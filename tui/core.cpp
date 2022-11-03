@@ -6,5 +6,5 @@
 #include <cassert>
 
 void tui::stub() {
-	assert(false);
+	std::abort();
 }

@@ -3,6 +3,9 @@
 //
 
 #include <utility>
+#include <algorithm>
+#include <numeric>
+#include <limits>
 
 #include "tui/widget.h"
 
@@ -22,6 +25,14 @@ int tui::widget::get_cols() {
 
 void tui::widget::draw(std::ostream &, const TermAttr &attr, const tui::Coop &coop) {
     stub();
+}
+
+int tui::widget::get_min_cols() {
+    return get_cols();
+}
+
+int tui::widget::get_min_rows() {
+    return get_rows();
 }
 
 
@@ -44,13 +55,21 @@ int tui::center::get_cols() {
 void tui::center::draw(std::ostream &ostream, const TermAttr &attr, const tui::Coop &coop) {
     int child_width = child->get_cols();
     int child_height = child->get_rows();
-    int start_x = get_cols() / 2 - child_width / 2;
-    int start_y = get_rows() / 2 - child_height / 2;
+    int start_x = (coop.x + get_cols()) / 2 - child_width / 2;
+    int start_y = (coop.y + get_rows()) / 2 - child_height / 2;
     child->draw(ostream, attr, Coop(start_x, start_y));
 }
 
 tui::center::center(std::shared_ptr<tui::widget> cp) : child(std::move(cp)) {
     child->parent = this;
+}
+
+int tui::center::get_min_rows() {
+    return child->get_min_rows();
+}
+
+int tui::center::get_min_cols() {
+    return child->get_min_cols();
 }
 
 // Box
@@ -163,11 +182,25 @@ void tui::sized_panel::notify() {
 }
 
 int tui::sized_panel::get_rows() {
-    return rows;
+    switch(rows){
+        case -1:
+            return child->get_min_rows();
+        case std::numeric_limits<short>::max():
+            return parent->get_rows();
+        default:
+            return rows;
+    }
 }
 
 int tui::sized_panel::get_cols() {
-    return cols;
+    switch(cols){
+        case -1:
+            return child->get_min_cols();
+        case std::numeric_limits<short>::max():
+            return parent->get_cols();
+        default:
+            return cols;
+    }
 }
 
 void tui::sized_panel::draw(std::ostream &ostream, const tui::TermAttr &attr, const tui::Coop &coop) {
@@ -225,4 +258,41 @@ void tui::panel::draw(std::ostream &ostream, const tui::TermAttr &attr, const tu
 
 tui::panel::panel(std::shared_ptr<widget> cp) : child(std::move(cp)) {
 
+}
+
+tui::vert_panel::vert_panel(std::initializer_list<std::shared_ptr<widget>> cps) : children(cps) {
+
+}
+
+void tui::vert_panel::add_children(std::shared_ptr<widget> child) {
+    children.emplace_back(child);
+}
+
+void tui::vert_panel::notify() {
+    short r = 0;
+    short c=0;
+    std::for_each(children.begin(), children.end(), [&r, &c](std::shared_ptr<widget>& ptr){
+       ptr->notify();
+       c = std::max(c, short(ptr->get_cols()));
+       r += ptr->get_rows();
+    });
+    this->rows = r;
+    this->cols = c;
+}
+
+int tui::vert_panel::get_rows() {
+    return this->rows;
+}
+
+int tui::vert_panel::get_cols() {
+    return this->cols;
+}
+
+void tui::vert_panel::draw(std::ostream &ostream, const tui::TermAttr &attr, const tui::Coop &coop) {
+    short x = coop.x;
+    short y = coop.y;
+    for(auto &ptr : children){
+        ptr->draw(ostream, attr, {x,y});
+        y += ptr->get_rows();
+    }
 }
