@@ -5,8 +5,6 @@
 #include <utility>
 
 #include "tui/widget.h"
-#include "tui/core.h"
-
 
 void tui::widget::notify() {
     stub();
@@ -30,7 +28,7 @@ void tui::widget::draw(std::ostream &, const TermAttr &attr, const tui::Coop &co
 // Impl below
 
 void tui::center::notify() {
-    child.notify();
+    child->notify();
 }
 
 int tui::center::get_rows() {
@@ -42,18 +40,22 @@ int tui::center::get_cols() {
 }
 
 void tui::center::draw(std::ostream &ostream, const TermAttr &attr, const tui::Coop &coop) {
-    int child_width = child.get_cols();
-    int child_height = child.get_rows();
+    int child_width = child->get_cols();
+    int child_height = child->get_rows();
     int start_x = get_cols() / 2 - child_width / 2;
     int start_y = get_rows() / 2 - child_height / 2;
-    child.draw(ostream, attr, Coop(start_x, start_y));
+    child->draw(ostream, attr, Coop(start_x, start_y));
+}
+
+tui::center::center(std::shared_ptr<tui::widget> cp) : child(std::move(cp)) {
+    child->parent = this;
 }
 
 
 void tui::box::notify() {
-    child.notify();
-    rows = child.get_rows() + 2;
-    cols = child.get_cols() + 2;
+    child->notify();
+    rows = child->get_rows() + 2;
+    cols = child->get_cols() + 2;
 }
 
 int tui::box::get_rows() {
@@ -94,11 +96,14 @@ void tui::box::draw(std::ostream &stream, const TermAttr &attr, const tui::Coop 
             stream << "─";
         }
     }
-    child.draw(stream, attr, Coop(coop.x + 1, coop.y + 1));
+    child->draw(stream, attr, Coop(coop.x + 1, coop.y + 1));
+}
+
+tui::box::box(std::shared_ptr<tui::widget> cp) : child(std::move(cp)) {
+    child->parent = this;
 }
 
 tui::text::text(std::string content) : content(std::move(content)) {
-    notify();
 }
 
 void tui::text::notify() {
@@ -141,12 +146,12 @@ void tui::text::draw(std::ostream &ostream, const tui::TermAttr &attr, const tui
     }
 }
 
-tui::panel::panel(short w, short h, widget &ww) : cols(w), rows(h), child(ww) {
-    child.parent = this;
+tui::panel::panel(short w, short h, std::shared_ptr<widget> ww) : cols(w), rows(h), child(std::move(ww)) {
+    child->parent = this;
 }
 
 void tui::panel::notify() {
-    child.notify();
+    child->notify();
 }
 
 int tui::panel::get_rows() {
@@ -158,5 +163,57 @@ int tui::panel::get_cols() {
 }
 
 void tui::panel::draw(std::ostream &ostream, const tui::TermAttr &attr, const tui::Coop &coop) {
-    child.draw(ostream, attr, coop);
+    child->draw(ostream, attr, coop);
+}
+
+void tui::attr::notify() {
+    return child->notify();
+}
+
+int tui::attr::get_rows() {
+    return child->get_rows();
+}
+
+int tui::attr::get_cols() {
+    return child->get_cols();
+}
+
+void tui::attr::draw(std::ostream &ostream, const tui::TermAttr &attr, const tui::Coop &coop) {
+
+    attr.set_text_attr(this->c);
+    child->draw(ostream, attr, coop);
+    attr.set_text_attr(tui::FG_COMMON | tui::BG_COMMON);
+}
+
+tui::attr::attr(tui::color color, std::shared_ptr<widget> cp) : c(color), child(std::move(cp)) {
+
+}
+
+void tui::bg::notify() {
+    child->notify();
+}
+
+int tui::bg::get_rows() {
+    return child->get_rows();
+}
+
+int tui::bg::get_cols() {
+    return child->get_cols();
+}
+
+void tui::bg::draw(std::ostream &ostream, const tui::TermAttr &attr, const tui::Coop &coop) {
+    DWORD written;
+    for (int y = 0; y < this->get_rows(); y++) {
+        COORD bg_coop = {short(coop.x), short(coop.y + y)};
+        FillConsoleOutputAttribute(
+                attr.hwnd, this->c.code,
+                this->get_cols(), bg_coop, &written
+        );
+    }
+
+    child->draw(ostream, attr, coop);
+}
+
+tui::bg::bg(tui::color color, std::shared_ptr<widget> cp) : c(color), child(std::move(cp)) {
+
 }

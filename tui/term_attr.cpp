@@ -82,7 +82,7 @@ void tui::TermAttr::init(std::ostream &stream) {
     clear(stream);
 }
 
-void tui::TermAttr::proceed(tui::widget &widget, std::ostream& stream) {
+void tui::TermAttr::proceed(std::shared_ptr<widget> widget, std::ostream& stream) {
     tui::panel panel(short(cols), short(rows), widget);
     panel.notify();
     panel.draw(stream, *this, Coop(1,1));

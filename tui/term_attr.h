@@ -6,6 +6,7 @@
 #pragma once
 
 #include<ostream>
+#include<memory>
 #include<windows.h>
 #include<conio.h>
 
@@ -35,7 +36,7 @@ namespace tui {
 
         char wait_key();
 
-        void proceed(widget& widget,std::ostream& stream);
+        void proceed(std::shared_ptr<widget> widget,std::ostream& stream);
 
 
     private:

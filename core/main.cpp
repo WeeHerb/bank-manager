@@ -4,7 +4,7 @@
 #include "tui/term_attr.h"
 #include "tui/widget.h"
 
-tui::TermAttr init_term(){
+tui::TermAttr init_term() {
     auto hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleOutputCP(CP_UTF8);
     tui::TermAttr term(hConsole);
@@ -17,12 +17,16 @@ int main() {
     auto term = init_term();
     using namespace tui;
 
+    term.proceed(std::make_shared<center>(
+            std::make_shared<bg>(
+                    tui::color(BACKGROUND_GREEN) | tui::FG_COMMON,
+                    std::make_shared<box>(
+                            std::make_shared<text>("Bank Man")
+                    )
+            )
 
-    auto wText = text("你好");
-    auto wBox = box(wText);
-    auto widget = center(wBox);
+    ), std::cout);
 
-    term.proceed(widget, std::cout);
 
     term.wait_key();
     term.refresh_size();

@@ -6,13 +6,15 @@
 #pragma once
 
 #include <ostream>
+#include <memory>
+#include "tui/color.h"
 #include "tui/core.h"
 #include "tui/term_attr.h"
 
 namespace tui {
     class widget {
     public:
-        widget *parent = nullptr;
+        widget *parent;
 
         virtual ~widget() = default;
 
@@ -29,11 +31,9 @@ namespace tui {
 
     class center : public widget {
     public:
-        widget &child;
+        std::shared_ptr<widget> child;
 
-        explicit center(widget &child) : child(child) {
-            child.parent = this;
-        }
+        explicit center(std::shared_ptr<widget> child);
 
 
         ~center() override = default;
@@ -54,11 +54,9 @@ namespace tui {
         short cols;
 
     public:
-        widget &child;
+        std::shared_ptr<widget> child;
 
-        explicit box(widget &child) : child(child) {
-            child.parent = this;
-        }
+        explicit box(std::shared_ptr<widget> child);
 
         ~box() override = default;
 
@@ -94,15 +92,14 @@ namespace tui {
     };
 
 
-
-    class panel : widget {
+    class panel : public widget {
     private:
         short rows = 0;
         short cols = 0;
     public:
-        widget &child;
+        std::shared_ptr<widget> child;
 
-        panel(short width, short height, widget &w);
+        panel(short width, short height, std::shared_ptr<widget> w);
 
         ~panel() override = default;
 
@@ -113,6 +110,44 @@ namespace tui {
         int get_cols() override;
 
         void draw(std::ostream &ostream, const TermAttr &attr, const Coop &coop) override;
+    };
+
+    class attr : public widget {
+    public:
+        color c;
+        std::shared_ptr<widget> child;
+
+        attr(color c, std::shared_ptr<widget> child);
+
+        ~attr() override = default;
+
+        void notify() override;
+
+        int get_rows() override;
+
+        int get_cols() override;
+
+        void draw(std::ostream &ostream, const TermAttr &attr, const Coop &coop) override;
+
+    };
+
+    class bg : public widget {
+    public:
+        color c;
+        std::shared_ptr<widget> child;
+
+        bg(color c, std::shared_ptr<widget> child);
+
+        ~bg() override = default;
+
+        void notify() override;
+
+        int get_rows() override;
+
+        int get_cols() override;
+
+        void draw(std::ostream &ostream, const TermAttr &attr, const Coop &coop) override;
+
     };
 }
 

@@ -21,5 +21,4 @@ namespace tui {
 
     const static color BG_COMMON = color(BACKGROUND_BLUE);
     const static color FG_COMMON = color(FOREGROUND_BLUE| FOREGROUND_GREEN | FOREGROUND_RED);
-
 }
