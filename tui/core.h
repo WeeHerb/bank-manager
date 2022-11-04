@@ -4,19 +4,18 @@
 
 
 #pragma once
+#include<string_view>
 
 namespace tui {
     void stub();
 
-    struct Coop{
-        int x,y;
-        Coop(int x,int y):x(x), y(y){
+    struct BorderRes{
+        constexpr const static std::string_view leftTop = "┌";
+        constexpr const static std::string_view rightTop = "┐";
+        constexpr const static std::string_view leftBottom = "└";
+        constexpr const static std::string_view rightBottom = "┘";
 
-        }
-
-        bool operator <(const Coop& rhs) const {
-            if(x == rhs.x) return y < rhs.y;
-            else return x < rhs.x;
-        }
+        constexpr const static std::string_view hLine = "─";
+        constexpr const static std::string_view vLine = "│";
     };
 }
