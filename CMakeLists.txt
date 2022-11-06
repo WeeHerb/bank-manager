@@ -8,7 +8,8 @@ include_directories(./)
 file(GLOB BANK_SRC
         core/*.cpp core/**/*.cpp
         tui/*.cpp tui/**/*.cpp
-        db/*.cpp db/**/*.cpp)
+        db/*.cpp db/**/*.cpp
+        logger/*.cpp)
 
 foreach(ITEM ${BANK_SRC})
     message(${ITEM})
