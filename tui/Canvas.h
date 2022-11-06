@@ -18,6 +18,7 @@ namespace tui {
         Coord base;
 
         [[nodiscard]] Coord applyBase(const Coord &origin) const;
+
     public:
         explicit Canvas(HANDLE handle);
 
@@ -27,10 +28,16 @@ namespace tui {
         /// \return
         Canvas limitCoord(short offsetX, short offsetY);
 
-        void fill(const Coord& coord, std::size_t size, char c);
-        void fillAttr(const Coord& coord, std::size_t size, const tui::Color& attr);
-        void line(const Coord& coord, const std::string_view & text);
-        void character(const Coord& coord, char ch);
-        void move(const Coord& coord);
+        void fill(const Coord &coord, std::size_t size, char c);
+
+        void fillAttr(const Coord &coord, std::size_t size, const tui::Color &attr);
+
+        void line(const Coord &coord, const std::string_view &text);
+
+        void lineW(const Coord &coord, const std::wstring_view &text);
+
+        void character(const Coord &coord, char ch);
+
+        void move(const Coord &coord);
     };
 } // tui

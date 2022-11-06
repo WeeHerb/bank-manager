@@ -26,6 +26,10 @@ namespace tui {
         move(applyBase(coord));
         WriteConsole(hwnd, text.data(), text.size(), nullptr, nullptr);
     }
+    void Canvas::lineW(const Coord &coord, const std::wstring_view &text) {
+        move(applyBase(coord));
+        WriteConsoleW(hwnd, text.data(), text.size(), nullptr, nullptr);
+    }
 
     void Canvas::fillAttr(const Coord &coord, std::size_t size, const Color &attr) {
         LoggerPrinter("Canvas") << "fill canvas " << applyBase(coord) << " len " << size<< " with " << attr.code << "\n";
