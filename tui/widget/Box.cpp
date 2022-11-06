@@ -24,13 +24,14 @@ namespace tui {
     void Box::draw(Canvas &canvas) {
         auto childCanvas = canvas.limitCoord(1,1);
         child->draw(childCanvas);
-        const short rightBorder = getCols()-1;
+        const auto rightBorder = short(getCols()-1);
+        const auto bottomBorder = short(getRows() - 1);
         for(short y = 1; y < getRows(); y++){
             canvas.line({0,y}, border::vLine);
             canvas.line({rightBorder,y}, border::vLine);
         }
         canvas.line({0,0},border::topLineWithCorner(getCols()));
-        canvas.line({0,short(getRows())},border::bottomLineWithCorner(getCols()));
+        canvas.line({0,bottomBorder},border::bottomLineWithCorner(getCols()));
     }
 
     Box::Box(std::shared_ptr<Widget> child) : Container(std::move(child)) {

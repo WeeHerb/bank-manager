@@ -8,7 +8,7 @@
 namespace tui {
     bool Text::measure(std::pair<short, short> parentSize) {
 
-        int h = 0, w = 0;
+        int h = 1, w = 0;
         int curLineW = 0;
         for(const auto& ch: content){
             assert(ch != '\r' && ch != '\n'); //先判掉，一时半会没实现
