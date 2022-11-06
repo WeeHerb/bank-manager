@@ -18,7 +18,8 @@ namespace tui {
     }
 
     void Canvas::fill(const Coord &coord, std::size_t size, char c) {
-        FillConsoleOutputCharacter(hwnd, c, size, applyBase(coord).unwrap(), nullptr);
+        DWORD out;
+        FillConsoleOutputCharacter(hwnd, c, size, applyBase(coord).unwrap(), &out);
     }
 
     void Canvas::line(const Coord &coord, const std::string_view &text) {
@@ -27,7 +28,10 @@ namespace tui {
     }
 
     void Canvas::fillAttr(const Coord &coord, std::size_t size, const Color &attr) {
-        FillConsoleOutputAttribute(hwnd, attr.code, size, applyBase(coord).unwrap(), nullptr);
+        LoggerPrinter("Canvas") << "fill canvas " << applyBase(coord) << " len " << size<< " with " << attr.code << "\n";
+        LoggerFlush();
+        DWORD out;
+        FillConsoleOutputAttribute(hwnd, attr.code, size, applyBase(coord).unwrap(), &out);
     }
 
     void Canvas::character(const Coord &coord, char ch) {
@@ -36,6 +40,7 @@ namespace tui {
     }
 
     void Canvas::move(const Coord &coord) {
+        LoggerPrinter("Canvas") << "move to " << coord << "\n";
         SetConsoleCursorPosition(hwnd, coord.unwrap());
     }
 
