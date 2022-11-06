@@ -15,5 +15,8 @@ namespace tui {
         [[nodiscard]] short getCols() const override;
 
         void draw(Canvas &canvas) override;
+
+        explicit Box(std::shared_ptr<Widget>);
+        ~Box() override = default;
     };
 } // tui

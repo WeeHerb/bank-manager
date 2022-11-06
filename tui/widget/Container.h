@@ -23,5 +23,7 @@ namespace tui {
         [[nodiscard]] short getCols() const override;
 
         void draw(Canvas &canvas) override;
+
+        ~Container() override = default;
     };
 } // tui

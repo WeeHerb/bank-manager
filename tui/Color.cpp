@@ -3,7 +3,7 @@
 //
 #include "Color.h"
 
-namespace tui {
+namespace tui::color {
     const extern Color FG_RED = Color(FOREGROUND_RED);
     const extern Color FG_BLUE = Color(FOREGROUND_BLUE);
     const extern Color FG_GREEN = Color(FOREGROUND_GREEN);

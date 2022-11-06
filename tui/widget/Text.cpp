@@ -7,6 +7,7 @@
 
 namespace tui {
     bool Text::measure(std::pair<short, short> parentSize) {
+
         int h = 0, w = 0;
         int curLineW = 0;
         for(const auto& ch: content){

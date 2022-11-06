@@ -5,6 +5,7 @@
 #pragma once
 
 #include<windows.h>
+#include<ostream>
 
 namespace tui {
     class Coord {
@@ -23,6 +24,7 @@ namespace tui {
         _COORD unwrap() const;
 
         Coord(short x, short y);
-        Coord(short x, short y, short offsetX, short offsetY);
     };
+
+    std::ostream & operator<<(std::ostream& , const Coord&);
 } // tui

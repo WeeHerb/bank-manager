@@ -29,7 +29,7 @@ namespace tui {
 
         void fill(const Coord& coord, std::size_t size, char c);
         void fillAttr(const Coord& coord, std::size_t size, const tui::Color& attr);
-        void line(const Coord& coord, const std::string& text);
+        void line(const Coord& coord, const std::string_view & text);
         void character(const Coord& coord, char ch);
         void move(const Coord& coord);
     };

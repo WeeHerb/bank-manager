@@ -28,6 +28,8 @@ namespace tui {
 
         void invalidate();
 
+        void waitKey();
+
         explicit Term(HANDLE hwnd);
     };
 } // tui

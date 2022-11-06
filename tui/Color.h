@@ -19,17 +19,19 @@ namespace tui {
         }
     };
 
-    const extern Color FG_RED;
-    const extern Color FG_BLUE ;
-    const extern Color FG_GREEN;
+    namespace color{
+        const extern Color FG_RED;
+        const extern Color FG_BLUE ;
+        const extern Color FG_GREEN;
 
-    const extern Color BG_RED ;
-    const extern Color BG_BLUE;
-    const extern Color BG_GREEN ;
+        const extern Color BG_RED ;
+        const extern Color BG_BLUE;
+        const extern Color BG_GREEN ;
 
-    const extern Color FG_INTENSITY ;
-    const extern Color BG_INTENSITY ;
+        const extern Color FG_INTENSITY ;
+        const extern Color BG_INTENSITY ;
 
-    const extern Color BG_COMMON ;
-    const extern Color FG_COMMON ;
+        const extern Color BG_COMMON ;
+        const extern Color FG_COMMON ;
+    }
 }

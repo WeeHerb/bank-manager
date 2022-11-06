@@ -4,6 +4,8 @@
 
 #include "Canvas.h"
 
+#include "logger/logger.h"
+
 namespace tui {
     Canvas::Canvas(HANDLE handle) : hwnd(handle), base(0, 0) {
         SetConsoleOutputCP(CP_UTF8);
@@ -19,9 +21,9 @@ namespace tui {
         FillConsoleOutputCharacter(hwnd, c, size, applyBase(coord).unwrap(), nullptr);
     }
 
-    void Canvas::line(const Coord &coord, const std::string &text) {
+    void Canvas::line(const Coord &coord, const std::string_view &text) {
         move(applyBase(coord));
-        WriteConsole(hwnd, text.c_str(), text.size(), nullptr, nullptr);
+        WriteConsole(hwnd, text.data(), text.size(), nullptr, nullptr);
     }
 
     void Canvas::fillAttr(const Coord &coord, std::size_t size, const Color &attr) {
@@ -34,7 +36,7 @@ namespace tui {
     }
 
     void Canvas::move(const Coord &coord) {
-        SetConsoleCursorPosition(hwnd, applyBase(coord).unwrap());
+        SetConsoleCursorPosition(hwnd, coord.unwrap());
     }
 
     Coord Canvas::applyBase(const Coord &origin) const {
