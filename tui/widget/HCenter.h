@@ -20,5 +20,7 @@ namespace tui {
         void draw(Canvas &canvas) override;
 
         ~HCenter() override = default;
+
+        friend class VCenter;
     };
 } // tui
