@@ -1,8 +1,5 @@
 #include "tui/Term.h"
-#include "tui/widget/BasicText.h"
-#include "tui/widget/Box.h"
-#include "tui/widget/AttrFill.h"
-#include "tui/widget/Center.h"
+#include "tui/Widget.h"
 
 
 int main() {
