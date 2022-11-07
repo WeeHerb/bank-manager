@@ -11,3 +11,5 @@
 #include "widget/Center.h"
 #include "widget/VCenter.h"
 #include "widget/HCenter.h"
+#include "widget/Struct.h"
+#include "widget/ListView.h"
