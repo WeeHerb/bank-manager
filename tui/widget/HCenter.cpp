@@ -13,7 +13,14 @@ namespace tui {
     }
 
     bool HCenter::measure(std::pair<short, short> parentSize) {
-        if (parentSize.first <= 0 && parentSize.second <= 0) return false;
+        if (parentSize.first <= 0 && parentSize.second <= 0) {
+            if(!child->measure({0,0})){
+                return false;
+            }
+            cols = child->getCols();
+            rows = child->getRows();
+            return false;
+        }
         cols = parentSize.first;
         if (!child->measure({cols, parentSize.second})) {
             return false;

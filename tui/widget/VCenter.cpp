@@ -12,7 +12,14 @@ namespace tui {
     }
 
     bool VCenter::measure(std::pair<short, short> parentSize) {
-        if (parentSize.first <= 0 && parentSize.second <= 0) return false;
+        if (parentSize.first <= 0 && parentSize.second <= 0) {
+            if(!child->measure({0,0})){
+                return false;
+            }
+            rows = child->getRows();
+            cols = child->getCols();
+            return false;
+        }
         rows = parentSize.second;
         if (!child->measure({parentSize.first, rows})) {
             return false;
