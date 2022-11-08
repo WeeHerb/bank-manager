@@ -22,6 +22,7 @@ namespace tui {
     }
 
     void Box::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         auto childCanvas = canvas.limitCoord(1,1);
         child->draw(childCanvas);
         const auto rightBorder = short(getCols()-1);
@@ -32,6 +33,7 @@ namespace tui {
         }
         canvas.line({0,0},border::topLineWithCorner(getCols()));
         canvas.line({0,bottomBorder},border::bottomLineWithCorner(getCols()));
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 
     Box::Box(std::shared_ptr<Widget> child) : Container(std::move(child)) {

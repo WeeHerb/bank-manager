@@ -65,12 +65,16 @@ namespace tui {
     }
     template<class T>
     void BasicText<T>::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         canvas.line({0,0}, content);
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 
     template<>
     void BasicText<std::wstring>::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         canvas.lineW({0,0}, content);
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 
     template<class T>

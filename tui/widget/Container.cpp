@@ -20,7 +20,9 @@ namespace tui {
     }
 
     void Container::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         child->draw(canvas);
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 
     Container::Container(std::shared_ptr<Widget> cp) : child(std::move(cp)){

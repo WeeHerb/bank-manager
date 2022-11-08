@@ -29,10 +29,12 @@ namespace tui {
     }
 
     void VCenter::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         short child_rows = child->getRows();
         auto y = short(getRows() / 2 - child_rows / 2);
         if(y < 0) y = 0;
         auto childCanvas = canvas.limitCoord(0,y);
         child->draw(childCanvas);
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 } // tui

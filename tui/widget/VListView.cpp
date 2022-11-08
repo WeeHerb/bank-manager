@@ -43,11 +43,13 @@ namespace tui {
     }
 
     void VListView::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         short drawY = 0;
         for(auto& child:children){
             auto subCanvas = canvas.limitCoord(0, drawY);
             child->draw(subCanvas);
             drawY += child->getRows(); // NOLINT(cppcoreguidelines-narrowing-conversions)
         }
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 } // tui

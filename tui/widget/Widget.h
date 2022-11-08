@@ -3,7 +3,9 @@
 //
 
 #pragma once
+
 #include "../Canvas.h"
+#include "logger/logger.h"
 
 namespace tui {
     class Widget {
@@ -17,14 +19,16 @@ namespace tui {
         /// Usually, only `match_parent` need second measure, other layout like `wrap_content` can give correct information without parent size
         /// \param parentSize (cols, rows)
         /// \return Needn't second measure
-        virtual bool measure(std::pair<short,short> parentSize);
+        virtual bool measure(std::pair<short, short> parentSize);
 
         [[nodiscard]] virtual short getRows() const;
+
         [[nodiscard]] virtual short getCols() const;
 
-        virtual void draw(tui::Canvas& canvas);
+        virtual void draw(tui::Canvas &canvas);
 
         void setFocusOrder(FocusOrderIdx order);
+
         [[nodiscard]] FocusOrderIdx getFocusOrder() const;
 
         [[nodiscard]] bool isFocusable() const;

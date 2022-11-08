@@ -36,11 +36,13 @@ namespace tui {
     }
 
     void HListView::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         short drawX = 0;
         for(auto& child:children){
             auto subCanvas = canvas.limitCoord(drawX, 0);
             child->draw(subCanvas);
             drawX += child->getCols(); // NOLINT(cppcoreguidelines-narrowing-conversions)
         }
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 } // tui

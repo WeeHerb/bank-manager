@@ -38,11 +38,13 @@ namespace tui {
     }
 
     void HCenter::draw(Canvas &canvas) {
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
         short child_cols = child->getCols();
         auto x = short(getCols() / 2 - child_cols/2);
         if(x < 0) x = 0;
         auto childCanvas = canvas.limitCoord(x, 0);
         child->draw(childCanvas);
+        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
 
 
