@@ -23,7 +23,7 @@ namespace tui {
         }
         cols = parentSize.first;
         if (!child->measure({cols, parentSize.second})) {
-            return false;
+            std::abort();
         }
         rows = child->getRows();
         return true;
