@@ -11,15 +11,20 @@
 
 namespace tui {
 
-    class ListView : public Widget{
+    class VListView : public Widget {
     private:
         short cols;
         short rows;
         std::vector<std::shared_ptr<Widget>> children;
     public:
-        ListView(std::initializer_list<std::shared_ptr<Widget>>);
+        VListView(std::initializer_list<std::shared_ptr<Widget>>);
 
-        ~ListView() override = default;
+        template<class ...T>
+        explicit VListView(T ...children): cols(0), rows(0), children(std::initializer_list<std::shared_ptr<Widget>>({children...})) {
+
+        }
+
+        ~VListView() override = default;
 
         bool measure(std::pair<short, short> parentSize) override;
 
@@ -28,6 +33,8 @@ namespace tui {
         [[nodiscard]] short getCols() const override;
 
         void draw(Canvas &canvas) override;
+
+        friend class HListView;
     };
 
 } // tui

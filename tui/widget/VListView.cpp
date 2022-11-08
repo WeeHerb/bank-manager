@@ -2,14 +2,14 @@
 // Created by mslxl on 11/7/2022.
 //
 
-#include "ListView.h"
+#include "VListView.h"
 
 
 namespace tui {
-    ListView::ListView(std::initializer_list<std::shared_ptr<Widget>> child) : cols(0), rows(0),
-                                                                               children(child) {}
+    VListView::VListView(std::initializer_list<std::shared_ptr<Widget>> child) : cols(0), rows(0),
+                                                                                 children(child) {}
 
-    bool ListView::measure(std::pair<short, short> parentSize) {
+    bool VListView::measure(std::pair<short, short> parentSize) {
         std::vector<std::shared_ptr<Widget>> second_measure_vec;
         short fuzzyRows = 0; //模糊行高，仅用于二次测量
         short certainRows = 0; // 已经确定的最小行高，不包含需要二次测量的 Widget
@@ -34,15 +34,15 @@ namespace tui {
         return true;
     }
 
-    short ListView::getRows() const {
+    short VListView::getRows() const {
         return rows;
     }
 
-    short ListView::getCols() const {
+    short VListView::getCols() const {
         return cols;
     }
 
-    void ListView::draw(Canvas &canvas) {
+    void VListView::draw(Canvas &canvas) {
         short drawY = 0;
         for(auto& child:children){
             auto subCanvas = canvas.limitCoord(0, drawY);
