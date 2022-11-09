@@ -6,7 +6,7 @@
 #include <iostream>
 #include "logger.h"
 
-namespace logger {
+namespace __logger {
 
     logger::logger(const std::string &file): stream("./" +file) {
 
@@ -25,6 +25,6 @@ namespace logger {
         stream.close();
     }
 
-} // logger
+    logger __log = logger(std::to_string(time(nullptr)) + ".log");
+} // __logger
 
-logger::logger __log = logger::logger(std::to_string(time(nullptr)) + ".log");
