@@ -73,10 +73,7 @@ enum { value = true };\
 
 
 #ifndef NDEBUG
-    // LoggerEnableTag("Canvas")
-    // LoggerEnableTag("Widget")
-    LoggerEnableTag("Term")
-    // LoggerEnableTag("Context")
+#include "enabled.h"
 #endif
 
 

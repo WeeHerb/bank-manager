@@ -13,18 +13,18 @@ namespace tui {
         std::vector<std::shared_ptr<Widget>> second_measure_vec;
         short fuzzyRows = 0; //模糊行高，仅用于二次测量
         short certainRows = 0; // 已经确定的最小行高，不包含需要二次测量的 Widget
-        for(auto& child: children){
-            if(!child->measure({0,0})){
+        for (auto &child: children) {
+            if (!child->measure({0, 0})) {
                 second_measure_vec.push_back(child);
-            }else{
+            } else {
                 certainRows = short(certainRows + child->getRows());
             }
             cols = std::max(cols, child->getCols());
             fuzzyRows = short(fuzzyRows + child->getRows());
         }
 
-        for(auto &child: second_measure_vec){
-            if(!child->measure({cols, fuzzyRows})){
+        for (auto &child: second_measure_vec) {
+            if (!child->measure({cols, fuzzyRows})) {
                 std::abort();
             }
             certainRows = short(certainRows + child->getRows());
@@ -43,13 +43,20 @@ namespace tui {
     }
 
     void VListView::draw(Canvas &canvas) {
-        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
+        LoggerPrinter("Widget") << "Widget " << typeid(this).name() << " draw begin\n";
         short drawY = 0;
-        for(auto& child:children){
+        for (auto &child: children) {
             auto subCanvas = canvas.limitCoord(0, drawY);
             child->draw(subCanvas);
             drawY += child->getRows(); // NOLINT(cppcoreguidelines-narrowing-conversions)
         }
-        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
+        LoggerPrinter("Widget") << "Widget " << typeid(this).name() << " draw end\n";
+    }
+
+    void VListView::track(WidgetTracker &tracker) {
+        for (auto &child: children) {
+            tracker(child);
+            child->track(tracker);
+        }
     }
 } // tui

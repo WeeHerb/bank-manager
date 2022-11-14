@@ -32,6 +32,8 @@ namespace tui {
 
         [[nodiscard]] short getCols() const override;
 
+        void track(WidgetTracker &tracker) override;
+
         void draw(Canvas &canvas) override;
 
         friend class HListView;

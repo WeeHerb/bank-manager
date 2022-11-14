@@ -5,7 +5,6 @@
 
 #include "Term.h"
 #include "core.h"
-#include<iostream>
 
 namespace tui {
     void Term::updateSize() {
@@ -15,18 +14,23 @@ namespace tui {
         rows = short(csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
     }
 
-    Term::Term(HANDLE handle) : hwnd(handle), rows(0), cols(0) {
+    Term::Term(HANDLE handle) : hwnd(handle), rows(0), cols(0), border(true), needDrawAll(true) {
         updateSize();
     }
 
     void Term::invalidate() {
-        updateSize();
-
+        needDrawAll = true;
         draw();
     }
 
     void Term::push(std::shared_ptr<tui::Widget> content) {
-        contents.emplace(std::move(content));
+        Context context;
+        context.collect(content);
+
+        contents.emplace(ContentLayer{
+            content,
+            context
+        });
     }
 
     void Term::pop() {
@@ -34,11 +38,21 @@ namespace tui {
     }
 
     void Term::draw() {
+
+        auto lastSize = std::make_pair(rows, cols);
+        updateSize();
+        if(lastSize != std::make_pair(rows, cols)){
+            needDrawAll = true;
+        }
+
         auto content = contents.top();
         Canvas canvas = Canvas(hwnd).limitCoord(1, 1);
-        drawBG();
-        content->measure({cols - 1, rows - 1});
-        content->draw(canvas);
+        if(needDrawAll){
+            drawBG();
+            needDrawAll = false;
+        }
+        content.widget->measure({cols - 1, rows - 1});
+        content.widget->draw(canvas);
     }
 
     void Term::drawBG() const {
@@ -49,31 +63,70 @@ namespace tui {
         FillConsoleOutputAttribute(hwnd, attr, rows * cols, {0, 0}, &written);
         SetConsoleCursorPosition(hwnd, {0, 0});
 
+        if (border) {
+            WriteConsole(hwnd, border::leftTop.data(), border::leftTop.size(), nullptr, nullptr);
+            for (int i = 0; i < cols - 2; i++)
+                WriteConsole(hwnd, border::hLine.data(), border::hLine.size(), nullptr, nullptr);
+            WriteConsole(hwnd, border::rightTop.data(), border::rightTop.size(), nullptr, nullptr);
 
-        WriteConsole(hwnd, border::leftTop.data(), border::leftTop.size(), nullptr, nullptr);
-        for (int i = 0; i < cols - 2; i++)
-            WriteConsole(hwnd, border::hLine.data(), border::hLine.size(), nullptr, nullptr);
-        WriteConsole(hwnd, border::rightTop.data(), border::rightTop.size(), nullptr, nullptr);
+            for (short y = 1; y < rows - 1; y++) {
+                SetConsoleCursorPosition(hwnd, {0, y});
+                WriteConsole(hwnd, border::vLine.data(), border::vLine.size(), nullptr, nullptr);
+                SetConsoleCursorPosition(hwnd, {short(cols - 1), y});
+                WriteConsole(hwnd, border::vLine.data(), border::vLine.size(), nullptr, nullptr);
+            }
 
-        for (short y = 1; y < rows - 1; y++) {
-            SetConsoleCursorPosition(hwnd, {0, y});
-            WriteConsole(hwnd, border::vLine.data(), border::vLine.size(), nullptr, nullptr);
-            SetConsoleCursorPosition(hwnd, {short(cols - 1), y});
-            WriteConsole(hwnd, border::vLine.data(), border::vLine.size(), nullptr, nullptr);
+            SetConsoleCursorPosition(hwnd, {0, short(rows - 1)});
+            WriteConsole(hwnd, border::leftBottom.data(), border::leftBottom.size(), nullptr, nullptr);
+            for (int i = 0; i < cols - 2; i++)
+                WriteConsole(hwnd, border::hLine.data(), border::hLine.size(), nullptr, nullptr);
+            WriteConsole(hwnd, border::rightBottom.data(), border::rightBottom.size(), nullptr, nullptr);
+            SetConsoleCursorPosition(hwnd, {1, 1});
         }
 
-        SetConsoleCursorPosition(hwnd, {0, short(rows - 1)});
-        WriteConsole(hwnd, border::leftBottom.data(), border::leftBottom.size(), nullptr, nullptr);
-        for (int i = 0; i < cols - 2; i++)
-            WriteConsole(hwnd, border::hLine.data(), border::hLine.size(), nullptr, nullptr);
-        WriteConsole(hwnd, border::rightBottom.data(), border::rightBottom.size(), nullptr, nullptr);
-        SetConsoleCursorPosition(hwnd, {1, 1});
+    }
+
+    void Term::capture() {
+        while(!contents.empty()){
+            this->draw();
+            int key = waitKey();
+            if(key == 224){
+                // 被转义的字符
+                int real_key = waitKey();
+                switch(real_key){
+                    case 72:
+                        // UP
+                        LoggerPrinter("Term") << "Hover prev" << "\n";
+                        contents.top().context.hoverPrev();
+                        break;
+                    case 80:
+                        // Down
+                        LoggerPrinter("Term") << "Hover next" << "\n";
+                        contents.top().context.hoverNext();
+                        break;
+                    case 75:
+                        // Left
+                        break;
+                    case 77:
+                        // Right
+                        break;
+                    default:
+                        LoggerPrinter("Term") << "Unknown keycode ^"<<key << "('^" << char(key) << "')\n";
+                        break;
+                }
+            }
+            LoggerPrinter("Term") << "Keycode " << key << "('" << char(key) << "')" << "\n";
+            if(key == -1){
+                LoggerPrinter("Term") << "Exiting" << "\n";
+                break;
+            }
+        }
     }
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "readability-convert-member-functions-to-static"
-    void Term::waitKey() {
-        _getch();
+    int Term::waitKey() {
+        return _getch();
     }
 #pragma clang diagnostic pop
 

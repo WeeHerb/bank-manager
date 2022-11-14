@@ -7,16 +7,21 @@
 #include<stack>
 #include<memory>
 
+#include "Context.h"
 #include "widget/Widget.h"
 
 namespace tui {
     class Term {
     private:
-        std::stack<std::shared_ptr<tui::Widget>> contents;
+        std::stack<ContentLayer> contents;
+        bool needDrawAll;
 
         void updateSize();
         void drawBG() const;
+        void draw();
+
     public:
+        bool border;
         HANDLE hwnd;
         short rows;
         short cols;
@@ -24,11 +29,11 @@ namespace tui {
         void push(std::shared_ptr<tui::Widget> content);
         void pop();
 
-        void draw();
+        void capture();
 
         void invalidate();
 
-        void waitKey();
+        int waitKey();
 
         explicit Term(HANDLE hwnd);
     };

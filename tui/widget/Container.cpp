@@ -28,4 +28,13 @@ namespace tui {
     Container::Container(std::shared_ptr<Widget> cp) : child(std::move(cp)){
 
     }
+
+    void Container::track(WidgetTracker &tracker) {
+        tracker(child);
+        child->track(tracker);
+    }
+
+    bool Container::acceptKey(int keyCode) {
+        return child->acceptKey(keyCode);
+    }
 } // tui

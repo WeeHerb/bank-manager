@@ -24,6 +24,10 @@ namespace tui {
 
         void draw(Canvas &canvas) override;
 
+        void track(WidgetTracker &tracker) override;
+
         ~Container() override = default;
+
+        bool acceptKey(int keyCode) override;
     };
 } // tui

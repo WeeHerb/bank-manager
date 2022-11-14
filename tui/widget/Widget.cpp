@@ -36,4 +36,23 @@ namespace tui {
     bool Widget::isFocusable() const {
         return getFocusOrder() != -1;
     }
+
+    void Widget::track(WidgetTracker &track) {
+
+    }
+
+    void Widget::hover() {
+        hasFocus = true;
+    }
+
+    void Widget::unhover() {
+        hasFocus = false;
+    }
+
+    bool Widget::acceptKey(int keyCode) {
+        return false;
+    }
+
+
+
 } // tui
