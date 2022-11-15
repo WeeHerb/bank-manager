@@ -90,10 +90,12 @@ namespace tui {
         while(!contents.empty()){
             this->draw();
             int key = waitKey();
+            LoggerPrinter("Term") << "Keycode " << key << "('" << char(key) << "')" << "\n";
             if(key == 224){
                 // 被转义的字符
-                int real_key = waitKey();
-                switch(real_key){
+                key = waitKey();
+                LoggerPrinter("Term") << "Keycode ^"<<key << "('^" << char(key) << "')\n";
+                switch(key){
                     case 72:
                         // UP
                         LoggerPrinter("Term") << "Hover prev" << "\n";
@@ -111,15 +113,20 @@ namespace tui {
                         // Right
                         break;
                     default:
-                        LoggerPrinter("Term") << "Unknown keycode ^"<<key << "('^" << char(key) << "')\n";
                         break;
                 }
+            }else{
+                if(key == -1){
+                    LoggerPrinter("Term") << "Exiting" << "\n";
+                    break;
+                }
+
+                auto focus = contents.top().context.getHoverPtr();
+                if(focus.has_value()){
+                    focus.value()->acceptKey(key);
+                }
             }
-            LoggerPrinter("Term") << "Keycode " << key << "('" << char(key) << "')" << "\n";
-            if(key == -1){
-                LoggerPrinter("Term") << "Exiting" << "\n";
-                break;
-            }
+
         }
     }
 

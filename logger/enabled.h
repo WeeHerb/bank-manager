@@ -8,4 +8,5 @@
 // LoggerEnableTag("Canvas")
 // LoggerEnableTag("Widget")
 LoggerEnableTag("Term")
-LoggerEnableTag("Context")
+//LoggerEnableTag("Context")
+LoggerEnableTag("TextField")
