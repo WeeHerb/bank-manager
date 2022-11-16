@@ -40,7 +40,6 @@ namespace tui {
     }
 
     void Term::draw() {
-
         auto lastSize = std::make_pair(rows, cols);
         updateSize();
         if(lastSize != std::make_pair(rows, cols)){
@@ -88,8 +87,18 @@ namespace tui {
 
     }
 
+    void Term::refreshHover() {
+        auto ptr = contents.top().context.getHoverPtr();
+        if(ptr.has_value()){
+            ptr.value()->hover();
+        }
+    }
     void Term::capture() {
-        while(!contents.empty()){
+        if(contents.empty()) std::abort();
+        refreshHover();
+
+        const std::size_t capturedLayout = contents.size();
+        while(contents.size() >= capturedLayout){ //当 当前捕获输入的内容层 被弹出后，停止捕获内容
             this->draw();
             Keycode key;
             while(key.type == Keycode::Holding){

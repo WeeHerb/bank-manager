@@ -19,6 +19,7 @@ namespace tui {
         void updateSize();
         void drawBG() const;
         void draw();
+        void refreshHover();
 
     public:
         bool border;
