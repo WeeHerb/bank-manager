@@ -28,6 +28,6 @@ namespace tui {
 
         ~Container() override = default;
 
-        bool acceptKey(int keyCode) override;
+        bool acceptKey(Keycode keyCode) override;
     };
 } // tui

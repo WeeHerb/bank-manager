@@ -19,7 +19,7 @@ namespace tui {
 
         void draw(Canvas &canvas) override;
 
-        bool acceptKey(int keyCode) override;
+        bool acceptKey(Keycode keyCode) override;
 
         [[nodiscard]] short getRows() const override;
 

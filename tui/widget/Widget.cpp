@@ -49,10 +49,8 @@ namespace tui {
         hasFocus = false;
     }
 
-    bool Widget::acceptKey(int keyCode) {
+    bool Widget::acceptKey(Keycode keyCode) {
         return false;
     }
-
-
 
 } // tui

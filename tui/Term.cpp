@@ -4,7 +4,9 @@
 #include <conio.h>
 
 #include "Term.h"
+#include "Keycode.h"
 #include "core.h"
+
 
 namespace tui {
     void Term::updateSize() {
@@ -89,42 +91,30 @@ namespace tui {
     void Term::capture() {
         while(!contents.empty()){
             this->draw();
-            int key = waitKey();
-            LoggerPrinter("Term") << "Keycode " << key << "('" << char(key) << "')" << "\n";
-            if(key == 224){
-                // 被转义的字符
-                key = waitKey();
-                LoggerPrinter("Term") << "Keycode ^"<<key << "('^" << char(key) << "')\n";
-                switch(key){
-                    case 72:
-                        // UP
-                        LoggerPrinter("Term") << "Hover prev" << "\n";
-                        contents.top().context.hoverPrev();
-                        break;
-                    case 80:
-                        // Down
-                        LoggerPrinter("Term") << "Hover next" << "\n";
-                        contents.top().context.hoverNext();
-                        break;
-                    case 75:
-                        // Left
-                        break;
-                    case 77:
-                        // Right
-                        break;
-                    default:
-                        break;
+            Keycode key;
+            while(key.type == Keycode::Holding){
+                int i = waitKey();
+                LoggerPrinter("Term") << "accept key " << i << "\n";
+                if(i == -1){
+                    return;
                 }
-            }else{
-                if(key == -1){
-                    LoggerPrinter("Term") << "Exiting" << "\n";
+                key.push(i);
+            }
+            switch(key.type){
+                case Keycode::ArrowUp:
+                    contents.top().context.hoverPrev();
                     break;
+                case Keycode::ArrowDown:
+                    contents.top().context.hoverNext();
+                    break;
+                default:
+                {
+                    auto ptr = contents.top().context.getHoverPtr();
+                    if(ptr.has_value()){
+                        ptr.value()->acceptKey(key);
+                    }
                 }
 
-                auto focus = contents.top().context.getHoverPtr();
-                if(focus.has_value()){
-                    focus.value()->acceptKey(key);
-                }
             }
 
         }

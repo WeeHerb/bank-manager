@@ -7,12 +7,8 @@
 #include <utility>
 
 namespace tui {
-    Button::Button(std::shared_ptr<Widget> child) : Container(child) {
+    Button::Button(std::shared_ptr<Widget> child) : Container(child), action(std::nullopt) {
 
-    }
-
-    void Button::click() {
-        action();
     }
 
     void Button::setActionListener(std::function<void()> listener) {
@@ -34,6 +30,20 @@ namespace tui {
             }
         }
 
+    }
+
+    void Button::preform() {
+        if(action.has_value()){
+            action.value()();//()()()()()()()()()()    :)
+        }
+    }
+
+    bool Button::acceptKey(Keycode keyCode) {
+        if(keyCode.type == Keycode::Enter){
+            preform();
+            return true;
+        }
+        return false;
     }
 
 } // tui

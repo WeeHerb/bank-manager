@@ -34,7 +34,7 @@ namespace tui {
         child->track(tracker);
     }
 
-    bool Container::acceptKey(int keyCode) {
+    bool Container::acceptKey(Keycode keyCode) {
         return child->acceptKey(keyCode);
     }
 } // tui

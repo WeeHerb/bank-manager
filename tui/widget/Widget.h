@@ -9,6 +9,7 @@
 
 #include "../Canvas.h"
 #include "../Context.h"
+#include "../Keycode.h"
 #include "logger/logger.h"
 
 namespace tui {
@@ -52,7 +53,7 @@ namespace tui {
         /// Accept a key code, return true if it can process it successfully
         /// \param keyCode
         /// \return
-        virtual bool acceptKey(int keyCode);
+        virtual bool acceptKey(Keycode keyCode);
 
 
         virtual ~Widget() = default;
@@ -64,9 +65,6 @@ namespace tui {
     inline  std::shared_ptr<T> ui(_Args&&... args){
         return std::make_shared<T>(args...);
     }
-
-
-
 
     template<typename T,typename... _Args>
     inline std::shared_ptr<T> ui_args(std::function<void(T&)> init, _Args&&... args){
