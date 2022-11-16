@@ -2,7 +2,7 @@
 
 ## 花活
 
-- [ ] TUI
+- [X] [TUI](./tui) （毫无疑问是不是一个设计的很成功的tui架构）
 - [ ] 抄一个数据库
   + [ ] Parser Combinator
   + [ ] CFG LL(k) 版 SQL
