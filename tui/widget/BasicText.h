@@ -59,10 +59,10 @@ namespace tui {
     short BasicText<T>::getCols() const {
         return this->cols;
     }
+
     template<>
-    short BasicText<std::wstring>::getCols() const {
-        return short(this->cols * 2);
-    }
+    short BasicText<std::wstring>::getCols() const;
+
     template<class T>
     void BasicText<T>::draw(Canvas &canvas) {
         LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
@@ -71,11 +71,7 @@ namespace tui {
     }
 
     template<>
-    void BasicText<std::wstring>::draw(Canvas &canvas) {
-        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
-        canvas.lineW({0,0}, content);
-        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
-    }
+    void BasicText<std::wstring>::draw(Canvas &canvas) ;
 
     template<class T>
     BasicText<T>::BasicText(T text): content(std::move(text)), cols(0), rows(0) {
