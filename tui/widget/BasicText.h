@@ -3,19 +3,24 @@
 //
 
 #pragma once
+
 #include <cassert>
 #include "Widget.h"
 
 namespace tui {
 
     template<class T>
-    class BasicText : public Widget{
+    class BasicText : public Widget {
     private:
         short cols;
         short rows;
     public:
-        T content;
+        std::shared_ptr<T> content;
+
         explicit BasicText(T);
+
+        explicit BasicText(std::shared_ptr<T>);
+
         bool measure(std::pair<short, short> parentSize) override;
 
         [[nodiscard]] short getRows() const override;
@@ -33,14 +38,14 @@ namespace tui {
     bool BasicText<T>::measure(std::pair<short, short> parentSize) {
         int h = 1, w = 0;
         int curLineW = 0;
-        for(const auto& ch: content){
+        for (const auto &ch: *content) {
             assert(ch != '\r' && ch != '\n'); //先判掉，一时半会没实现
-            if(ch == '\r') continue;
-            else if(ch == '\n'){
+            if (ch == '\r') continue;
+            else if (ch == '\n') {
                 w = std::max(w, curLineW);
                 curLineW = 0;
                 h++;
-            }else{
+            } else {
                 curLineW++;
             }
         }
@@ -55,6 +60,7 @@ namespace tui {
     short BasicText<T>::getRows() const {
         return this->rows;
     }
+
     template<class T>
     short BasicText<T>::getCols() const {
         return this->cols;
@@ -65,15 +71,21 @@ namespace tui {
 
     template<class T>
     void BasicText<T>::draw(Canvas &canvas) {
-        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw begin\n";
-        canvas.line({0,0}, content);
-        LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
+        LoggerPrinter("Widget") << "Widget " << typeid(this).name() << " draw begin\n";
+        canvas.line({0, 0}, content);
+        LoggerPrinter("Widget") << "Widget " << typeid(this).name() << " draw end\n";
     }
 
     template<>
-    void BasicText<std::wstring>::draw(Canvas &canvas) ;
+    void BasicText<std::wstring>::draw(Canvas &canvas);
 
     template<class T>
-    BasicText<T>::BasicText(T text): content(std::move(text)), cols(0), rows(0) {
+    BasicText<T>::BasicText(T text): content(std::make_shared<T>(text)), cols(0), rows(0) {
     }
+
+    template<class T>
+    BasicText<T>::BasicText(std::shared_ptr<T> ptr): content(ptr), cols(0), rows(0) {
+
+    }
+
 } // tui
