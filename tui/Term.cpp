@@ -114,6 +114,7 @@ namespace tui {
                     contents.top().context.hoverPrev();
                     break;
                 case Keycode::ArrowDown:
+                case Keycode::Tab:
                     contents.top().context.hoverNext();
                     break;
                 default:

@@ -19,6 +19,7 @@ namespace tui {
             Num,
             Symbol,
             Backspace,
+            Tab,
             Undecided,
             Holding
         }type = Holding;

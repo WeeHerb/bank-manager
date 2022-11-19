@@ -47,6 +47,8 @@ namespace tui {
                 }
         }else if(first() == 8){
             type = Backspace;
+        } else if(first() == 9){
+            type = Tab;
         } else if (std::isalpha(first())) {
             type = Alpha;
         } else if (std::isdigit(first())) {
