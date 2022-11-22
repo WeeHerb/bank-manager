@@ -4,6 +4,7 @@
 
 #include "login.h"
 #include "meun.h"
+#include "tui/dialog/msgbox.h"
 
 void page::loginPage(tui::Term &term) {
     using namespace tui;
@@ -46,6 +47,13 @@ void page::loginPage(tui::Term &term) {
 
                                                                 page::menuPage(term);
                                                                 term.invalidate();
+                                                            } else {
+                                                                user.clear(), user.push_back('\0');
+                                                                pwd.clear(), pwd.push_back('\0');
+
+                                                                tui::msgbox<wchar_t, wchar_t, wchar_t>(term,
+                                                                                  L"用户名或密码错误",
+                                                                                  true, L"确定", false, L".");
                                                             }
                                                         });
                                                     },
@@ -55,7 +63,7 @@ void page::loginPage(tui::Term &term) {
                                                             )
                                                     )
                                             ),
-                                            ui<Struct>(1,10),
+                                            ui<Struct>(1, 10),
                                             ui_args<Button>(
                                                     [](Button &b) {
                                                         b.setFocusOrder(3);
