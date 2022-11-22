@@ -7,9 +7,9 @@
 #include <functional>
 #include <memory>
 
-#include "../Canvas.h"
-#include "../Context.h"
-#include "../Keycode.h"
+#include "tui/Canvas.h"
+#include "tui/Context.h"
+#include "tui/Keycode.h"
 #include "logger/logger.h"
 
 namespace tui {

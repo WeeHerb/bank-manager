@@ -4,21 +4,23 @@ project(bankmanager)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 
-include_directories(./)
-
-# AES module configuration below
-file(GLOB AES_SRC
-        aes/*.cpp
-        test/*.cpp)
-add_executable(aes-test ${AES_SRC})
+include_directories(./src)
 
 # Core configuration below
+file(GLOB_RECURSE BANK_SRC
+        src/*.cpp
+        src/*.hpp)
 
-file(GLOB BANK_SRC
-        core/*.cpp core/**/*.cpp
-        tui/*.cpp tui/**/*.cpp
-        db/*.cpp db/**/*.cpp
-        logger/*.cpp)
+foreach (ITEM ${BANK_SRC})
+    message(${ITEM})
+endforeach ()
 
 add_executable(${PROJECT_NAME} ${BANK_SRC})
 target_link_libraries(${PROJECT_NAME} -static-libgcc -static-libstdc++ -static)
+
+# AES module configuration below
+
+file(GLOB AES_SRC
+        src/aes/*.cpp
+        test/*.cpp)
+add_executable(aes-test ${AES_SRC})
