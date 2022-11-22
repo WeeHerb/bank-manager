@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Container.h"
-#include "../Color.h"
+#include "tui/Color.h"
 
 namespace tui {
 

@@ -8,7 +8,7 @@
 #include<memory>
 
 #include "Context.h"
-#include "widget/Widget.h"
+#include "tui/widget/Widget.h"
 
 namespace tui {
     class Term {

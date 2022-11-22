@@ -3,7 +3,7 @@
 //
 
 #include "Widget.h"
-#include "../core.h"
+#include "tui/core.h"
 
 namespace tui {
     void Widget::draw(Canvas &canvas) {

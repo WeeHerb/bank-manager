@@ -4,7 +4,7 @@
 #include <cassert>
 #include <sstream>
 
-#include "tui/core.h"
+#include "core.h"
 
 
 void tui::stub() {

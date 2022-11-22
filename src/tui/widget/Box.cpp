@@ -3,7 +3,7 @@
 //
 
 #include "Box.h"
-#include "../core.h"
+#include "tui/core.h"
 
 #include <utility>
 

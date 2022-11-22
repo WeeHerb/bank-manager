@@ -9,7 +9,7 @@
 #include <functional>
 #include <optional>
 
-#include "widget/Widget.h"
+#include "tui/widget/Widget.h"
 
 namespace tui {
     struct Widget;

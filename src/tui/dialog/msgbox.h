@@ -6,15 +6,15 @@
 #pragma once
 
 #include<string>
-#include "../Term.h"
-#include "../widget/Box.h"
-#include "../widget/Struct.h"
-#include "../widget/Center.h"
-#include "../widget/BasicText.h"
-#include "../widget/HListView.h"
-#include "../widget/VListView.h"
-#include "../widget/Visible.h"
-#include "../widget/Button.h"
+#include "tui/Term.h"
+#include "tui/widget/Box.h"
+#include "tui/widget/Struct.h"
+#include "tui/widget/Center.h"
+#include "tui/widget/BasicText.h"
+#include "tui/widget/HListView.h"
+#include "tui/widget/VListView.h"
+#include "tui/widget/Visible.h"
+#include "tui/widget/Button.h"
 
 namespace tui {
     template<class T, class Y=T, class N=T>
