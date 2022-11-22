@@ -6,21 +6,53 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 
 include_directories(./src)
 
-# Core configuration below
+# Bankmanager configuration below
+
+# Split core and no-core since no-core module need test
+# core and no-core will be static-linked to a executable file
 file(GLOB_RECURSE BANK_SRC
         src/*.cpp
         src/*.hpp)
-
-foreach (ITEM ${BANK_SRC})
-    message(${ITEM})
+foreach (FILE_PATH ${BANK_SRC})
+    file(RELATIVE_PATH REL_FILE_PATH ${PROJECT_SOURCE_DIR} ${FILE_PATH})
+    if (NOT ${REL_FILE_PATH} MATCHES "src/core/.*")
+        list(APPEND BANK_SRC_NOCORE ${FILE_PATH})
+    else ()
+        list(APPEND BANK_SRC_CORE ${FILE_PATH})
+    endif ()
 endforeach ()
-
-add_executable(${PROJECT_NAME} ${BANK_SRC})
+add_library(${PROJECT_NAME}_nocore STATIC ${BANK_SRC_NOCORE})
+add_executable(${PROJECT_NAME} ${BANK_SRC_CORE})
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_nocore)
 target_link_libraries(${PROJECT_NAME} -static-libgcc -static-libstdc++ -static)
 
-# AES module configuration below
+# Test configuration
 
-file(GLOB AES_SRC
-        src/aes/*.cpp
-        test/*.cpp)
-add_executable(aes-test ${AES_SRC})
+# init gtest
+enable_testing()
+include(FetchContent)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
+)
+FetchContent_MakeAvailable(googletest)
+include(GoogleTest)
+
+# add testcase
+file(GLOB_RECURSE TESTCASE_SRC
+        tests/*.cpp)
+foreach (FILE_PATH ${TESTCASE_SRC})
+    string(REGEX REPLACE ".+/(.+)\\..*" "\\1" FILE_NAME ${FILE_PATH})
+    message("Testcase: " ${FILE_NAME})
+
+    add_executable(${FILE_NAME}
+            ${FILE_PATH})
+    target_link_libraries(
+            ${FILE_NAME}
+            GTest::gtest_main
+            ${PROJECT_NAME}_nocore
+    )
+    gtest_discover_tests(${FILE_NAME})
+endforeach ()
