@@ -3,10 +3,10 @@
 ## 花活
 
 - [X] [TUI](src/tui) （毫无疑问不是一个设计的很成功的tui架构）
-- ~~[ ] 抄一个数据库~~
-  + ~~[ ] Parser Combinator~~
-  + ~~[ ] CFG LL(k) 版 SQL~~
-- [ ] Glob -> DFA
+- [ ] ~~抄一个数据库~~
+  + [ ] ~~Parser Combinator~~
+  + [ ] ~~CFG LL(k) 版 SQL~~
+- [X] Wildcard
 
 ## 课程要求
 - [ ] 银行职员管理：输入数据建立职员表，添加、删除、修改、查询职员信息（参考通讯录）
