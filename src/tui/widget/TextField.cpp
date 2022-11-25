@@ -29,6 +29,10 @@ namespace tui {
     }
 
     bool TextField::acceptKey(Keycode keyCode) {
+        if(keyCode.type == Keycode::Enter){
+            return false;
+        }
+
         if (keyCode.type == Keycode::Backspace && text->size() >= 2) {
             LoggerPrinter("TextField") << "Erase key\n";
             text->erase(text->end()-2);
