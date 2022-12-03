@@ -72,7 +72,7 @@ namespace tui {
     template<class T>
     void BasicText<T>::draw(Canvas &canvas) {
         LoggerPrinter("Widget") << "Widget " << typeid(this).name() << " draw begin\n";
-        canvas.line({0, 0}, content);
+        canvas.line({0, 0}, *content);
         LoggerPrinter("Widget") << "Widget " << typeid(this).name() << " draw end\n";
     }
 

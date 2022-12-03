@@ -17,3 +17,5 @@
 #include "tui/widget/Button.h"
 #include "tui/widget/Visible.h"
 #include "tui/widget/TextField.h"
+#include "tui/widget/Padding.h"
+#include "tui/widget/Table.h"
