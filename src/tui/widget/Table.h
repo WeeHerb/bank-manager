@@ -11,14 +11,14 @@
 #include "tui/core.h"
 
 namespace tui {
-    template<typename... Elements>
+    template<short COLS>
     class Table : public Widget {
     public:
-        using ElementVec = std::vector<std::array<std::shared_ptr<Widget>, sizeof...(Elements)>>;
+        using ElementVec = std::vector<std::array<std::shared_ptr<Widget>, COLS>>;
     private:
         ElementVec components;
         std::vector<short> rowHeight;
-        std::array<short, sizeof...(Elements)> colWidth;
+        std::array<short, COLS> colWidth;
 
     public:
         explicit Table(ElementVec table) : components(table), rowHeight(table.size(), -1) {
@@ -31,7 +31,7 @@ namespace tui {
 
         bool measure(std::pair<short, short> parentSize) override {
             std::list<std::tuple<short, short, std::shared_ptr<Widget>>> toMeasure;
-            for (std::size_t c = 0; c < sizeof...(Elements); c++) {
+            for (std::size_t c = 0; c < COLS; c++) {
                 for (std::size_t r = 0; r < components.size(); r++) {
                     if (components[r][c]->measure(std::make_pair(-1, -1))) {
                         rowHeight[r] = std::max(rowHeight[r], components[r][c]->getRows());
@@ -65,7 +65,7 @@ namespace tui {
             short row = 0;
             for (std::size_t r = 0; r < components.size(); r++) {
                 short cols = 0;
-                for (std::size_t c = 0; c < sizeof...(Elements); c++) {
+                for (std::size_t c = 0; c < COLS; c++) {
                     auto limitedCanvas = canvas.limitCoord(cols, row);
                     components[r][c]->draw(limitedCanvas);
                     cols += colWidth[c];
@@ -85,6 +85,13 @@ namespace tui {
 
         ~Table() override = default;
     };
+
+    template<typename  ...T>
+    constexpr std::array<std::shared_ptr<Widget>,  sizeof...(T)> tableRow(T... elements) {
+        using arr = std::array<std::shared_ptr<Widget>,  sizeof...(T)>;
+        arr a = {{elements...}};
+        return a;
+    }
 
 
 } // tui
