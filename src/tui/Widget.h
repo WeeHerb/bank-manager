@@ -20,3 +20,4 @@
 #include "tui/widget/Padding.h"
 #include "tui/widget/Table.h"
 #include "tui/widget/Checkbox.h"
+#include "tui/widget/Switch.h"
