@@ -15,7 +15,7 @@ file(GLOB_RECURSE BANK_SRC
         src/*.hpp)
 foreach (FILE_PATH ${BANK_SRC})
     file(RELATIVE_PATH REL_FILE_PATH ${PROJECT_SOURCE_DIR} ${FILE_PATH})
-    if (NOT ${REL_FILE_PATH} MATCHES "src/core/.*")
+    if (NOT ${REL_FILE_PATH} MATCHES "src/core/main.cpp")
         list(APPEND BANK_SRC_NOCORE ${FILE_PATH})
     else ()
         list(APPEND BANK_SRC_CORE ${FILE_PATH})
