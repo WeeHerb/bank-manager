@@ -15,15 +15,24 @@ namespace AES{
             return result;
         }
 
+        int GFMul4(int s){
+            return GFMul2(GFMul2(s));
+        }
+
+        int GFMul8(int s){
+            return GFMul2(GFMul4(s));
+        }
+
         int GFMul3(int s) {
             return GFMul2(s) ^ s;
         }
 
-        int GFMul9(int s) {
-            return GFMul3(GFMul3(s));
+        int GFMul12(int s){
+            return GFMul8(s) ^ GFMul4(s);
         }
+
         public:
-        GFMul(){};
+        explicit GFMul(){};
         int GFMuln(int n,int s);
     };
 }

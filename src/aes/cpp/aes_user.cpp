@@ -4,16 +4,13 @@
 #include<assert.h>
 #include<random>
 
-#include<iostream>
 
 namespace AES{
     u_aes:: u_aes(char *str){
-        std:: cout<<"\n"<<"test user begin: \n";
-        this->key_complement=true;
         srand(time(NULL));
         this->row_key_len=0;
         this->new_key_len=16;
-        this->key=new char(this->new_key_len+1);
+        this->key=new char[this->new_key_len+1];
         this->key[new_key_len]='\0';
         for(int i=0;i<this->new_key_len;i++){
             int x=rand()%26;
@@ -21,59 +18,57 @@ namespace AES{
         }
         
         this->row_str_len=strlen(str);
+
         if(this->row_str_len%16==0){
-            this->new_str_len=row_str_len;
-            this->str_complement=false;
+            this->new_str_len=this->row_str_len+16;
         }else{
-            this->new_str_len=row_str_len+(16-row_str_len%16);
-            this->str_complement=true;
+            this->new_str_len=32-this->row_str_len%16+this->row_str_len;
         }
-        this->str=new char(this->new_str_len+1);
-        this->str[new_str_len]='\0';
+        this->str=new char[this->new_str_len+1];
+        this->str[this->new_str_len]='\0';
+        int stuff=this->new_str_len-this->row_str_len;
         for(int i=0;i<this->new_str_len;i++){
             if(i<this->row_str_len) this->str[i]=str[i];
-            else this->str[i]='0';
+            else this->str[i]=char(stuff);
         }
-        std:: cout<<"len: "<<this->row_str_len<<" "<<this->new_str_len<<"\n";
-        std:: cout<<"key: "<<this->key<<"\n";
-        std:: cout<<"str: "<<this->str<<"\n";
-        std:: cout<<"end! \n";
 
     }
     u_aes:: u_aes(char *str,char *key){
         this->row_str_len=strlen(str);
-        this->row_key_len=strlen(key);
 
-        if(this->row_key_len==16){
-            this->new_key_len=row_key_len;
-            this->key_complement=false;
-        }else{
-            if(row_key_len>16){
-                assert("A wrong key!");
-            }
-            this->new_key_len=row_key_len+(16-row_key_len%16);
-            this->key_complement=true;
-        }
         if(this->row_str_len%16==0){
-            this->new_str_len=row_str_len;
-            this->str_complement=false;
+            this->new_str_len=this->row_str_len+16;
         }else{
-            this->new_str_len=row_str_len+(16-row_key_len%16);
-            this->str_complement=true;
+            this->new_str_len=(32-(this->row_str_len%16))+this->row_str_len;
         }
+        int stuff = this->new_str_len-this->row_str_len;
 
-        this->str=new char(this->new_str_len+1);
-        this->key=new char(this->new_key_len+1);
-        this->key[new_key_len]='\0';
-        this->str[new_str_len]='\0';
-        
-        for(int i=0;i<this->new_key_len;i++){
-            if(i<this->row_key_len) this->key[i]=key[i];
-            else this->key[i]='0';
-        }
+        this->str=new char[this->new_str_len+1];
+        this->str[this->new_str_len]='\0';
+
         for(int i=0;i<this->new_str_len;i++){
             if(i<this->row_str_len) this->str[i]=str[i];
-            else this->str[i]='0';
+            else{
+                this->str[i]=(char)stuff;
+            }
+        }
+
+        
+        this->row_key_len=strlen(key);
+        this->key=new char[17]; this->key[16]='\0';
+        if(this->row_key_len>=16){
+            for(int i=0;i<16;i++){
+                this->key[i]=key[i];
+            }
+        }else{
+            srand(time(NULL));
+            for(int i=0;i<16;i++){
+                if(i<this->row_key_len) this->key[i]=key[i];
+                else{
+                    int x=rand()%26;
+                    this->key[i]=char(x+97);
+                }
+            }
         }
     }
 
@@ -104,13 +99,11 @@ namespace AES{
         }
         aes aes_en(this->key,this->str);
         aes_en.de_aes();
+        this->str[this->row_str_len]='\0';
         return this->str;
     }
 
     char* u_aes:: get_key(){
-        if(has_close){
-            assert("Key has been deleted!");
-        }
         return this->key;
     }
 }

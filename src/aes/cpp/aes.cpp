@@ -13,14 +13,14 @@ namespace AES{
         int result = (int) c;
 	    return result & 0x000000ff;
     }
-    int aes:: get_word_from_str(char *str){
-        int one = get_int_from_char(str[0]);
+    int aes:: get_word_from_str(char *str_get){
+        int one = get_int_from_char(str_get[0]);
         one = one << 24;
-        int two = get_int_from_char(str[1]);
+        int two = get_int_from_char(str_get[1]);
         two = two << 16;
-        int three = get_int_from_char(str[2]);
+        int three = get_int_from_char(str_get[2]);
         three = three << 8;
-        int four = get_int_from_char(str[3]);
+        int four = get_int_from_char(str_get[3]);
         return one | two | three | four;
     }
     void aes:: split_int_to_array(int num, int array[4]) {
@@ -58,6 +58,19 @@ namespace AES{
     }
     int aes:: T(int num, int round) {
         int num_array[4];
+    
+        const int Rcon[10] = { 0x01000000, 0x02000000,
+        0x04000000, 0x08000000,
+        0x10000000, 0x20000000,
+        0x40000000, (int)0x80000000,
+        0x1b000000, 0x36000000 };
+        split_int_to_array(num, num_array);
+
+        left_loop4int(num_array, 1);
+
+        for(int i = 0; i < 4; i++)
+            num_array[i] = get_num_from_sbox(num_array[i]);
+
         auto merge_array_to_int = [num_array]()->int{
             int one = num_array[0] << 24;
             int two = num_array[1] << 16;
@@ -65,33 +78,26 @@ namespace AES{
             int four = num_array[3];
             return one | two | three | four;
         };
-        const int Rcon[10] = { 0x01000000, 0x02000000,
-        0x04000000, 0x08000000,
-        0x10000000, 0x20000000,
-        0x40000000, (int)0x80000000,
-        0x1b000000, 0x36000000 };
-        split_int_to_array(num, num_array);
-        left_loop4int(num_array, 1);//字循环
-
-        //字节代换
-        for(int i = 0; i < 4; i++)
-            num_array[i] = get_num_from_sbox(num_array[i]);
 
         int result = merge_array_to_int();
+
         return result ^ Rcon[round];
     }
     void aes:: extend_key(char *key){
-        for(int i = 0; i < 4; i++)
+
+        for(int i = 0; i < 4; i++){
             w[i] = get_word_from_str(key + i * 4);
+        }
 
         for(int i = 4, j = 0; i < 44; i++) {
             if( i % 4 == 0) {
                 w[i] = w[i - 4] ^ T(w[i - 1], j);
-                j++;//下一轮
+                j++;
             }else {
                 w[i] = w[i - 4] ^ w[i - 1];
             }
         }
+
     }
 
     void aes:: convert_to_int_array(char *con_str,int pa[4][4]){
@@ -109,6 +115,7 @@ namespace AES{
         for(int i = 0; i < 4; i++) {
 
             split_int_to_array(w[ round * 4 + i], warray);
+
 
             for(int j = 0; j < 4; j++) {
                 array[j][i] = array[j][i] ^ warray[j];
@@ -169,10 +176,7 @@ namespace AES{
         }
     }
     void aes:: run_aes(){
-        // std:: cout<<"I am run_aes\n";
-        // std:: cout<<"len : "<<this->len<<std:: endl;
-        // std:: cout<<"this is str:"<<this->str<<std:: endl;
-        extend_key(key);
+        extend_key(this->key);
         int p_array[4][4];
         for(int i=0;i<this->len;i+=16){
             convert_to_int_array(this->str + i, p_array);
@@ -186,7 +190,8 @@ namespace AES{
 
                 mix_columns(p_array);
 
-                add_round_key(p_array, i);
+                add_round_key(p_array, j);
+
             }
             sub_bytes(p_array);
 
@@ -294,11 +299,10 @@ namespace AES{
             for(int j = 0; j < 4; j++){
                 a_array[i][j] = a_array[i][j] ^ b_array[i][j];
             }
-        }    
+        }  
     }
 
     void aes:: de_aes(){
-        //std:: cout<<"I am de_aes, now str is:"<<this->str<<std:: endl;
         extend_key(this->key);
         int c_array[4][4];
         for(int i=0;i<this->len;i+=16){
@@ -313,7 +317,7 @@ namespace AES{
                 de_shift_rows(c_array);
 
                 de_mix_columns(c_array);
-                get_array_from4w(i, w_array);
+                get_array_from4w(j, w_array);
 			    de_mix_columns(w_array);
 
                 add_round_to_warray(c_array, w_array);
@@ -326,6 +330,5 @@ namespace AES{
 
             convert_array_to_str(c_array,this->str+i);
         }
-        //std:: cout<<"de_aes is finished ans :"<<this->str<<std:: endl;
     }
 }
