@@ -20,7 +20,8 @@ namespace tui {
         Container &dataContainer;
 
         TableBuilder(short &curPage, Container &_container, Builder builder) : builder(builder), curPage(curPage),
-                                                                               dataContainer(_container) {
+                                                                               dataContainer(_container),
+                                                                               Table<COLS>(ROWS) {
         }
 
         void buildComponent() {
@@ -29,10 +30,10 @@ namespace tui {
                 auto index = curPage * ROWS + i;
 
                 auto iter = dataContainer.begin();
-                for(int offset = 0; offset < index; offset++) {
-                    if(iter != dataContainer.end()){
+                for (int offset = 0; offset < index; offset++) {
+                    if (iter != dataContainer.end()) {
                         ++iter;
-                    }else{
+                    } else {
                         return;
                     }
                 }

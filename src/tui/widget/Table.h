@@ -24,6 +24,10 @@ namespace tui {
             std::fill(colWidth.begin(), colWidth.end(), -1);
         }
 
+        explicit Table(short predictRowHeight): rowHeight(predictRowHeight, -1){
+
+        }
+
         template<typename... T>
         explicit
         Table(T... table): Table(ElementVec(std::initializer_list({table...}))) {}
