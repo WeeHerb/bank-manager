@@ -18,9 +18,9 @@ namespace tui {
 
     void Checkbox::draw(Canvas &canvas) {
         if (*checked) {
-            canvas.line({0, 0}, "[ ]");
-        } else {
             canvas.line({0, 0}, "[*]");
+        } else {
+            canvas.line({0, 0}, "[ ]");
         }
         drawHoverBackground(canvas);
     }

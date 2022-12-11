@@ -3,6 +3,7 @@
 //
 
 #include "meun.h"
+#include "custom_account.h"
 
 void page::menuPage(tui::Term &term) {
     using namespace tui;
@@ -24,8 +25,11 @@ void page::menuPage(tui::Term &term) {
                     ui_args<Button>([](Button &b) {
                         b.setFocusOrder(0);
                     }, ui<WText>(L"1.银行职员管理")),
-                    ui_args<Button>([](Button &b) {
+                    ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(1);
+                        b.setActionListener([&term](){
+                            customerAccountPage(term);
+                        });
                     }, ui<WText>(L"2.客户账号管理")),
                     ui_args<Button>([](Button &b) {
                         b.setFocusOrder(2);

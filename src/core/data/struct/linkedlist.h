@@ -80,6 +80,7 @@ class LinkedList {
 private:
     LinkedListNode<T> *first;
     LinkedListNode<T> *last;
+    std::size_t size;
 
     void freeNode(LinkedListNode<T> *node) {
         if (node == nullptr) return;
@@ -96,11 +97,12 @@ private:
     }
 
 public:
-    LinkedList() : first(nullptr), last(nullptr) {
+    LinkedList() : first(nullptr), last(nullptr) , size(0){
     }
 
     void clear() {
         freeNode(first);
+        size = 0;
     }
 
     ~LinkedList() {
@@ -108,6 +110,7 @@ public:
     }
 
     void push_front(T data) {
+        size++;
         if (first == nullptr && last == nullptr) {
             initWith(data);
             return;
@@ -121,6 +124,7 @@ public:
 
 
     void push_back(T data) {
+        size++;
         if (first == nullptr && last == nullptr) {
             initWith(data);
             return;
@@ -146,6 +150,7 @@ public:
     }
 
     void insert(LinkedListIter<T> &iter, T data) {
+        size++;
         if (empty()) {
             push_back(data);
             return;
@@ -171,6 +176,7 @@ public:
 
     LinkedListIter<T> erase(LinkedListIter<T> &iter) {
         assert(!iter.end);
+        size--;
         if (iter.Iter->next == nullptr && iter.Iter->prev == nullptr && iter.Iter == first) {
             delete first;
             first = nullptr;

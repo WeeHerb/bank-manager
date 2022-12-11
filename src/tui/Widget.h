@@ -20,5 +20,6 @@
 #include "tui/widget/BasicTextButton.h"
 #include "tui/widget/Padding.h"
 #include "tui/widget/Table.h"
+#include "tui/widget/TableBuilder.h"
 #include "tui/widget/Checkbox.h"
 #include "tui/widget/Switch.h"

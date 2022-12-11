@@ -15,7 +15,6 @@ namespace tui {
     class Table : public Widget {
     public:
         using ElementVec = std::vector<std::array<std::shared_ptr<Widget>, COLS>>;
-    private:
         ElementVec components;
         std::vector<short> rowHeight;
         std::array<short, COLS> colWidth;
@@ -77,6 +76,7 @@ namespace tui {
         void track(WidgetTracker &tracker) override {
             for (auto &r: components) {
                 for (auto &w: r) {
+                    tracker(w);
                     w->track(tracker);
                 }
             }
