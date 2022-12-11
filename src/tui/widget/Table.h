@@ -15,7 +15,6 @@ namespace tui {
     class Table : public Widget {
     public:
         using ElementVec = std::vector<std::array<std::shared_ptr<Widget>, COLS>>;
-    private:
         ElementVec components;
         std::vector<short> rowHeight;
         std::array<short, COLS> colWidth;
@@ -23,6 +22,10 @@ namespace tui {
     public:
         explicit Table(ElementVec table) : components(table), rowHeight(table.size(), -1) {
             std::fill(colWidth.begin(), colWidth.end(), -1);
+        }
+
+        explicit Table(short predictRowHeight): rowHeight(predictRowHeight, -1){
+
         }
 
         template<typename... T>
@@ -77,6 +80,7 @@ namespace tui {
         void track(WidgetTracker &tracker) override {
             for (auto &r: components) {
                 for (auto &w: r) {
+                    tracker(w);
                     w->track(tracker);
                 }
             }
