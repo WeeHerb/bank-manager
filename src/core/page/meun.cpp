@@ -4,6 +4,7 @@
 
 #include "meun.h"
 #include "custom_account.h"
+#include "staff_manager.h"
 
 void page::menuPage(tui::Term &term) {
     using namespace tui;
@@ -22,8 +23,11 @@ void page::menuPage(tui::Term &term) {
                             )
                     ),
                     ui<Struct>(2, 1),
-                    ui_args<Button>([](Button &b) {
+                    ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(0);
+                        b.setActionListener([&term](){
+                            staffManagerPage(term);
+                        });
                     }, ui<WText>(L"1.银行职员管理")),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(1);
