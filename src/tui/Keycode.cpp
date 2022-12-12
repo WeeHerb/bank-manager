@@ -6,15 +6,15 @@
 #include "Keycode.h"
 
 namespace tui {
-    int Keycode::first() const noexcept {
+    int Keycode::first() const  {
         return data[0];
     }
 
-    int Keycode::third() const noexcept {
+    int Keycode::third() const  {
         return data[2];
     }
 
-    int Keycode::second() const noexcept {
+    int Keycode::second() const  {
         return data[1];
     }
 
@@ -23,7 +23,7 @@ namespace tui {
         updateType();
     }
 
-    void Keycode::updateType() noexcept {
+    void Keycode::updateType()  {
         if (first() == 224) {
             if (size < 2) {
                 type = Holding;

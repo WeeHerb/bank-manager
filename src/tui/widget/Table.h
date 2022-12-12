@@ -19,13 +19,12 @@ namespace tui {
         std::vector<short> rowHeight;
         std::array<short, COLS> colWidth;
 
-    public:
-        explicit Table(ElementVec table) : components(table), rowHeight(table.size(), -1) {
-            std::fill(colWidth.begin(), colWidth.end(), -1);
+        explicit Table(ElementVec table) : components(table), rowHeight(table.size(), 0) {
+            std::fill(colWidth.begin(), colWidth.end(), 0);
         }
 
-        explicit Table(short predictRowHeight): rowHeight(predictRowHeight, -1){
-
+        explicit Table(short predictRowHeight): rowHeight(predictRowHeight, 0){
+            std::fill(colWidth.begin(), colWidth.end(), 0);
         }
 
         template<typename... T>

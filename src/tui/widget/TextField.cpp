@@ -53,7 +53,7 @@ namespace tui {
     }
 
     TextField::TextField(std::vector<char> *content, short cols) : text(content), cols(cols) {
-        text->clear();
-        text->push_back('\0');
+        if(text->empty())
+            text->push_back('\0');
     }
 } // tui

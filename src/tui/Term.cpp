@@ -33,6 +33,7 @@ namespace tui {
             content,
             context
         });
+        rebuild();
     }
 
     void Term::pop() {
@@ -135,6 +136,11 @@ namespace tui {
     int Term::waitKey() {
         return _getch();
     }
+
+    void Term::rebuild() {
+        contents.top().widget->rebuild();
+    }
+
 #pragma clang diagnostic pop
 
 } // tui

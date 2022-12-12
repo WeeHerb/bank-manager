@@ -18,9 +18,10 @@
 
 namespace tui {
     template<class T, class Y=T, class N=T>
-    bool msgbox(Term &term, std::basic_string<T> msg,
-                bool confirm, std::basic_string<Y> confirmText,
-                bool cancel, std::basic_string<N> cancelText) {
+    bool
+    msgbox(Term &term, std::basic_string<T> msg,
+           bool confirm, std::basic_string<Y> confirmText,
+           bool cancel, std::basic_string<N> cancelText) {
         bool ans = true;
         auto page = ui<Center>(
                 ui<Box>(
@@ -64,12 +65,76 @@ namespace tui {
                         )
                 )
         );
+        term.push(page);
+        term.invalidate();
+        term.capture();
+        term.invalidate();
+        return ans;
+    }
+
+    template<class CharT, class T, class Y=T, class N=T>
+    std::optional<std::basic_string<CharT>>
+    inputbox(Term &term, std::basic_string<T> msg,
+             bool confirm, std::basic_string<Y> confirmText,
+             bool cancel, std::basic_string<N> cancelText) {
+        bool ans = true;
+        std::vector<CharT> input{0};
+        auto page = ui<Center>(
+                ui<Box>(
+                        ui<VListView>(
+                                ui<HCenter>(
+                                        ui<BasicText<std::basic_string<T>>>(msg)
+                                ),
+                                ui<HCenter>(
+                                        ui_args<TextField>([](TextField &t) {
+                                            t.setFocusOrder(0);
+                                        }, &input, 25)
+                                ),
+                                ui<Struct>(1, 1),
+                                ui<HCenter>(
+                                        ui<HListView>(
+                                                ui<Struct>(2, 1),
+                                                ui<Visible>(
+                                                        confirm,
+                                                        ui_args<Button>(
+                                                                [&ans, &term](Button &b) {
+                                                                    b.setFocusOrder(1);
+                                                                    b.setActionListener([&ans, &term]() {
+                                                                        ans = true;
+                                                                        term.pop();
+                                                                    });
+                                                                },
+                                                                ui<BasicText<std::basic_string<Y>>>(confirmText)
+                                                        )
+                                                ),
+                                                ui<Struct>(2, 1),
+                                                ui<Visible>(
+                                                        cancel,
+                                                        ui_args<Button>(
+                                                                [&ans, &term](Button &b) {
+                                                                    b.setFocusOrder(2);
+                                                                    b.setActionListener([&ans, &term]() {
+                                                                        ans = false;
+                                                                        term.pop();
+                                                                    });
+                                                                },
+                                                                ui<BasicText<std::basic_string<N>>>(cancelText)
+                                                        )
+                                                ),
+                                                ui<Struct>(2, 1)
+                                        )
+                                )
+                        )
+                )
+        );
 
         term.push(page);
         term.invalidate();
         term.capture();
         term.invalidate();
 
-        return ans;
+        if (ans) return std::basic_string<CharT>(input.data());
+        else return std::nullopt;
     }
+
 }

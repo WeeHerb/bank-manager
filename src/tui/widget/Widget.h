@@ -28,7 +28,7 @@ namespace tui {
         bool hasFocus = false;
         /// Measure this widget by its parent
         /// Return false if it need second measure
-        /// Usually, only `match_parent` need second measure, other layout like `wrap_content` can give correct information without parent size
+        /// Usually, only `match_parent` need second measure, other layout like `wrap_content` can give correct information without parent nodeNum
         /// \param parentSize (cols, rows)
         /// \return Needn't second measure
         virtual bool measure(std::pair<short, short> parentSize);
@@ -44,6 +44,8 @@ namespace tui {
         void setFocusOrder(FocusOrderIdx order);
 
         [[nodiscard]] FocusOrderIdx getFocusOrder() const;
+
+        virtual void rebuild();
 
         [[nodiscard]] bool isFocusable() const;
 

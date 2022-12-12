@@ -59,4 +59,10 @@ namespace tui {
             child->track(tracker);
         }
     }
+
+    void VListView::rebuild() {
+        for(auto& child: children){
+            child->rebuild();
+        }
+    }
 } // tui

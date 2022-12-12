@@ -27,14 +27,14 @@ namespace tui {
         std::array<int,3> data{0,0,0};
         short size=0;
 
-        [[nodiscard]] inline int first() const noexcept;
-        [[nodiscard]] inline int second() const noexcept;
-        [[nodiscard]] inline int third() const noexcept;
+        [[nodiscard]] inline int first() const ;
+        [[nodiscard]] inline int second() const ;
+        [[nodiscard]] inline int third() const ;
 
         void push(int v);
 
     private:
-        void updateType() noexcept;
+        void updateType() ;
 
     };
 

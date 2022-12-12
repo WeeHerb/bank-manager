@@ -45,4 +45,10 @@ namespace tui {
         }
         LoggerPrinter("Widget") << "Widget "<< typeid(this).name() <<" draw end\n";
     }
+
+    void HListView::rebuild() {
+        for(auto& child: children){
+            child->rebuild();
+        }
+    }
 } // tui

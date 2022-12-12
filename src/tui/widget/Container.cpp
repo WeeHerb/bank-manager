@@ -37,4 +37,8 @@ namespace tui {
     bool Container::acceptKey(Keycode keyCode) {
         return child->acceptKey(keyCode);
     }
+
+    void Container::rebuild() {
+        child->rebuild();
+    }
 } // tui

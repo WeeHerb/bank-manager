@@ -29,5 +29,7 @@ namespace tui {
         ~Container() override = default;
 
         bool acceptKey(Keycode keyCode) override;
+
+        void rebuild() override;
     };
 } // tui

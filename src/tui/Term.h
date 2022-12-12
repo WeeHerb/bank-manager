@@ -34,6 +34,8 @@ namespace tui {
 
         void invalidate();
 
+        void rebuild();
+
         int waitKey();
 
         explicit Term(HANDLE hwnd);
