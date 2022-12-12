@@ -19,6 +19,7 @@ void customerAccountAddPage(tui::Term &term) {
     using namespace tui;
     std::vector<char> number;
     std::vector<char> name;
+    std::vector<char> pwd;
     std::vector<char> telephone;
     std::vector<char> id;
     bool isVIP = false;
@@ -30,17 +31,20 @@ void customerAccountAddPage(tui::Term &term) {
                                     tableRow(ui<WText>(L"卡号:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(0);
                                     }, &number, 20)),
-                                    tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
+                                    tableRow(ui<WText>(L"密码:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(1);
+                                    }, &pwd, 20)),
+                                    tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
+                                        b.setFocusOrder(2);
                                     }, &name, 20)),
                                     tableRow(ui<WText>(L"电话:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(2);
+                                        b.setFocusOrder(3);
                                     }, &telephone, 20)),
                                     tableRow(ui<WText>(L"身份证:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(3);
+                                        b.setFocusOrder(4);
                                     }, &id, 20)),
                                     tableRow(ui<Text>(" VIP:"), ui_args<Checkbox>([](Checkbox &b) {
-                                        b.setFocusOrder(4);
+                                        b.setFocusOrder(5);
                                     }, &isVIP))
 
                             )
@@ -49,24 +53,26 @@ void customerAccountAddPage(tui::Term &term) {
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<WTextButton>(
-                                            [&term, &number, &name, &telephone, &id, &isVIP](WTextButton &btn) {
-                                                btn.setFocusOrder(5);
-                                                btn.setActionListener([&term, &number, &name, &telephone, &id, &isVIP] {
-                                                    Customer newCustomer{
-                                                            number.data(),
-                                                            name.data(),
-                                                            telephone.data(),
-                                                            id.data(),
-                                                            isVIP,
-                                                            0, 0
-                                                    };
-                                                    Database::getInstance()->customer.push_back(newCustomer);
-                                                    term.pop();
-                                                });
+                                            [&term, &number, &name, &telephone, &id, &isVIP, &pwd](WTextButton &btn) {
+                                                btn.setFocusOrder(6);
+                                                btn.setActionListener(
+                                                        [&term, &number, &name, &telephone, &id, &isVIP, &pwd] {
+                                                            Customer newCustomer{
+                                                                    number.data(),
+                                                                    pwd.data(),
+                                                                    name.data(),
+                                                                    telephone.data(),
+                                                                    id.data(),
+                                                                    isVIP,
+                                                                    {}, {}
+                                                            };
+                                                            Database::getInstance()->customer.push_back(newCustomer);
+                                                            term.pop();
+                                                        });
                                             }, L"添加"),
                                     ui<Struct>(1, 3),
                                     ui_args<WTextButton>([&term](WTextButton &btn) {
-                                        btn.setFocusOrder(6);
+                                        btn.setFocusOrder(7);
                                         btn.setActionListener([&term] {
                                             term.pop();
                                         });
@@ -95,6 +101,8 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
     std::vector<char> id(customer.id.begin(), customer.id.end());
     id.push_back('\0');
 
+    std::vector<char> oldPwd, newPwd;
+
     bool isVIP = customer.vip;
 
     auto widget = ui<Center>(
@@ -104,17 +112,23 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                                     tableRow(ui<WText>(L"卡号:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(0);
                                     }, &number, 20)),
-                                    tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
+                                    tableRow(ui<WText>(L"原密码:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(1);
+                                    }, &oldPwd, 20)),
+                                    tableRow(ui<WText>(L"新密码:"), ui_args<TextField>([](TextField &b) {
+                                        b.setFocusOrder(2);
+                                    }, &newPwd, 20)),
+                                    tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
+                                        b.setFocusOrder(3);
                                     }, &name, 20)),
                                     tableRow(ui<WText>(L"电话:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(2);
+                                        b.setFocusOrder(4);
                                     }, &telephone, 20)),
                                     tableRow(ui<WText>(L"身份证:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(3);
+                                        b.setFocusOrder(5);
                                     }, &id, 20)),
                                     tableRow(ui<Text>(" VIP:"), ui_args<Checkbox>([](Checkbox &b) {
-                                        b.setFocusOrder(4);
+                                        b.setFocusOrder(6);
                                     }, &isVIP))
 
                             )
@@ -123,20 +137,31 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<WTextButton>(
-                                            [&term, &number, &name, &telephone, &id, &isVIP, &customer](WTextButton &btn) {
-                                                btn.setFocusOrder(5);
-                                                btn.setActionListener([&term, &number, &name, &telephone, &id, &isVIP, &customer] {
-                                                    customer.cardID = number.data();
-                                                    customer.id = id.data();
-                                                    customer.telephone = telephone.data();
-                                                    customer.name = name.data();
-                                                    customer.vip = isVIP;
-                                                    term.pop();
-                                                });
+                                            [&term, &number, &name, &telephone, &id, &isVIP, &customer, &newPwd, &oldPwd](
+                                                    WTextButton &btn) {
+                                                btn.setFocusOrder(7);
+                                                btn.setActionListener(
+                                                        [&term, &number, &name, &telephone, &id, &isVIP, &customer, &oldPwd, &newPwd] {
+                                                            if (std::string(oldPwd.data()) != customer.password) {
+                                                                msgbox<wchar_t, wchar_t, wchar_t>(term, L"密码错误",
+                                                                                                  true, L"确定", false,
+                                                                                                  L"");
+                                                                return;
+                                                            }
+                                                            if (newPwd.size() > 1) {
+                                                                customer.password = newPwd.data();
+                                                            }
+                                                            customer.cardID = number.data();
+                                                            customer.id = id.data();
+                                                            customer.telephone = telephone.data();
+                                                            customer.name = name.data();
+                                                            customer.vip = isVIP;
+                                                            term.pop();
+                                                        });
                                             }, L"应用"),
                                     ui<Struct>(1, 3),
                                     ui_args<WTextButton>([&term](WTextButton &btn) {
-                                        btn.setFocusOrder(6);
+                                        btn.setFocusOrder(8);
                                         btn.setActionListener([&term] {
                                             term.pop();
                                         });
@@ -206,9 +231,9 @@ void page::customerAccountPage(tui::Term &term) {
                                                 ui<Struct>(1, 1),
                                                 ui<Text>(data.id),
                                                 ui<Struct>(1, 1),
-                                                ui<Text>(std::to_string(data.amount)),
+                                                ui<Text>(std::to_string(data.amount())),
                                                 ui<Struct>(1, 1),
-                                                ui<Text>("-" + std::to_string(data.debit)));
+                                                ui<Text>("-" + std::to_string(data.debit())));
                                     }
                             )
                     ),

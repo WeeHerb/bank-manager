@@ -5,28 +5,44 @@
 #pragma once
 
 #include<string>
+#include<vector>
 
-//class Customer {
-//    std::string name;
-//    std::string telephone;
-//    std::string id;
-//    std::string cardID;
-//    bool vip;
-//    unsigned long amount;
-//    unsigned long debit;
-//};
+#include "Transaction.h"
+#include "big/BigIntTiny.h"
 
-#define MESSAGE_HEAD Customer
-#define MESSAGE_BODY \
-    FIELD_STR(cardID)\
-    FIELD_STR(name)  \
-    FIELD_STR(telephone) \
-    FIELD_STR(id)         \
-    FIELD_BOOL(vip)  \
-    FIELD_I128(amount)   \
-    FIELD_I128(debit)\
-                     \
+struct Customer {
+    std::string cardID;
+    std::string password;
+    std::string name;
+    std::string telephone;
+    std::string id;
+    bool vip;
+    std::vector<Transaction> amountChange;
+    std::vector<Transaction> debitChange;
 
+    long double amount() {
+        long double num = 0;
+        const double yearProfit = 0.021, moProfit = 0.011, dayProfit = 0.009;
+        std::sort(amountChange.begin(), amountChange.end());
+        if (!amountChange.empty()) {
+            long long lastTime = amountChange[0].timestamp;
+            for (auto &trans: amountChange) {
+                num += trans.offset;
+                const auto curTimestamp = trans.timestamp;
+                num *= 1 + ((long double) (curTimestamp - lastTime) / 1000 / 60 / 60 / 24 / 365 * yearProfit);
+                num *= 1 + ((long double) (curTimestamp - lastTime) / 1000 / 60 / 60 / 24 / 30 * moProfit);
+                num *= 1 + ((long double) (curTimestamp - lastTime) / 1000 / 60 / 60 / 24 * dayProfit);
+            }
+        }
+        return num;
+    }
 
+    long double debit() {
+        long double num = 0;
+        for (auto &trans: debitChange) {
+            num += trans.offset;
+        }
+        return num;
+    }
+};
 
-#include "xmarco/xmarco.h"

@@ -4,13 +4,12 @@
 
 #pragma once
 
-#define MESSAGE_HEAD Staff
-#define MESSAGE_BODY \
-    FIELD_STR(cardID)\
-    FIELD_STR(name)  \
-    FIELD_STR(telephone) \
-    FIELD_STR(id)         \
-    FIELD_STR(level) \
-                     \
+#include<string>
 
-#include "xmarco/xmarco.h"
+struct Staff {
+    std::string cardID;
+    std::string name;
+    std::string telephone;
+    std::string id;
+    std::string level;
+};

@@ -5,6 +5,7 @@
 #include "meun.h"
 #include "custom_account.h"
 #include "staff_manager.h"
+#include "cash_reception.h"
 
 void page::menuPage(tui::Term &term) {
     using namespace tui;
@@ -35,8 +36,11 @@ void page::menuPage(tui::Term &term) {
                             customerAccountPage(term);
                         });
                     }, ui<WText>(L"2.客户账号管理")),
-                    ui_args<Button>([](Button &b) {
+                    ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(2);
+                        b.setActionListener([&term](){
+                            cashReceptionPage(term);
+                        });
                     }, ui<WText>(L"3.存取贷业务管理")),
                     ui_args<Button>([](Button &b) {
                         b.setFocusOrder(3);

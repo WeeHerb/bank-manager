@@ -3,9 +3,6 @@
 
 #include "core/page/login.h"
 
-
-
-
 int main() {
     using namespace tui;
     //setlocale(LC_ALL, nullptr);
