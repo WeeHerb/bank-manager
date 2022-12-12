@@ -5,12 +5,14 @@
 #pragma once
 
 #include<memory>
+#include "Staff.h"
 #include "Customer.h"
 #include "struct/linkedlist.h"
 
 class Database {
 public:
     LinkedList<Customer> customer;
+    LinkedList<Staff> staff;
 private:
     Database()= default;
 

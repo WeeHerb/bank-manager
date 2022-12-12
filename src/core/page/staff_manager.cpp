@@ -1,5 +1,5 @@
 //
-// Created by mslxl on 11/24/2022.
+// Created by mslxl on 12/12/2022.
 //
 
 // hey, im a nester!
@@ -7,7 +7,7 @@
 
 #include<sstream>
 
-#include "custom_account.h"
+#include "staff_manager.h"
 
 #include "tui/Widget.h"
 #include "glob/wildcard.hpp"
@@ -15,19 +15,19 @@
 #include "core/data/Database.h"
 #include "core/data/Customer.h"
 
-void customerAccountAddPage(tui::Term &term) {
+void staffAddManager(tui::Term &term) {
     using namespace tui;
     std::vector<char> number;
     std::vector<char> name;
     std::vector<char> telephone;
     std::vector<char> id;
-    bool isVIP = false;
+    std::vector<char> level;
 
     auto widget = ui<Center>(
             ui<VListView>(
                     ui<Box>(
                             ui<Table<2>>(
-                                    tableRow(ui<WText>(L"卡号:"), ui_args<TextField>([](TextField &b) {
+                                    tableRow(ui<WText>(L"员工编号:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(0);
                                     }, &number, 20)),
                                     tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
@@ -39,28 +39,26 @@ void customerAccountAddPage(tui::Term &term) {
                                     tableRow(ui<WText>(L"身份证:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(3);
                                     }, &id, 20)),
-                                    tableRow(ui<Text>(" VIP:"), ui_args<Checkbox>([](Checkbox &b) {
+                                    tableRow(ui<WText>(L"职位:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(4);
-                                    }, &isVIP))
-
+                                    }, &level, 20))
                             )
                     ),
                     ui<Struct>(2, 1),
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<WTextButton>(
-                                            [&term, &number, &name, &telephone, &id, &isVIP](WTextButton &btn) {
+                                            [&term, &number, &name, &telephone, &id, &level](WTextButton &btn) {
                                                 btn.setFocusOrder(5);
-                                                btn.setActionListener([&term, &number, &name, &telephone, &id, &isVIP] {
-                                                    Customer newCustomer{
+                                                btn.setActionListener([&term, &number, &name, &telephone, &id, &level] {
+                                                    Staff staff{
                                                             number.data(),
                                                             name.data(),
                                                             telephone.data(),
                                                             id.data(),
-                                                            isVIP,
-                                                            0, 0
+                                                            level.data()
                                                     };
-                                                    Database::getInstance()->customer.push_back(newCustomer);
+                                                    Database::getInstance()->staff.push_back(staff);
                                                     term.pop();
                                                 });
                                             }, L"添加"),
@@ -81,27 +79,28 @@ void customerAccountAddPage(tui::Term &term) {
     term.invalidate();
 }
 
-void customerAccountEditPage(tui::Term &term, Customer &customer) {
+void staffEditPage(tui::Term &term, Staff &staff) {
     using namespace tui;
-    std::vector<char> number(customer.cardID.begin(), customer.cardID.end());
+    std::vector<char> number(staff.cardID.begin(), staff.cardID.end());
     number.push_back('\0');
 
-    std::vector<char> name(customer.name.begin(), customer.name.end());
+    std::vector<char> name(staff.name.begin(), staff.name.end());
     name.push_back('\0');
 
-    std::vector<char> telephone(customer.telephone.begin(), customer.telephone.end());
+    std::vector<char> telephone(staff.telephone.begin(), staff.telephone.end());
     telephone.push_back('\0');
 
-    std::vector<char> id(customer.id.begin(), customer.id.end());
+    std::vector<char> id(staff.id.begin(), staff.id.end());
     id.push_back('\0');
 
-    bool isVIP = customer.vip;
+    std::vector<char> level(staff.level.begin(), staff.level.end());
+    level.push_back('\0');
 
     auto widget = ui<Center>(
             ui<VListView>(
                     ui<Box>(
                             ui<Table<2>>(
-                                    tableRow(ui<WText>(L"卡号:"), ui_args<TextField>([](TextField &b) {
+                                    tableRow(ui<WText>(L"员工编号:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(0);
                                     }, &number, 20)),
                                     tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
@@ -113,27 +112,27 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                                     tableRow(ui<WText>(L"身份证:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(3);
                                     }, &id, 20)),
-                                    tableRow(ui<Text>(" VIP:"), ui_args<Checkbox>([](Checkbox &b) {
+                                    tableRow(ui<WText>(L"职位:"), ui_args<TextField>([](TextField &b) {
                                         b.setFocusOrder(4);
-                                    }, &isVIP))
-
+                                    }, &level, 20))
                             )
                     ),
                     ui<Struct>(2, 1),
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<WTextButton>(
-                                            [&term, &number, &name, &telephone, &id, &isVIP, &customer](WTextButton &btn) {
+                                            [&term, &number, &name, &telephone, &id, &level, &staff](WTextButton &btn) {
                                                 btn.setFocusOrder(5);
-                                                btn.setActionListener([&term, &number, &name, &telephone, &id, &isVIP, &customer] {
-                                                    customer.cardID = number.data();
-                                                    customer.id = id.data();
-                                                    customer.telephone = telephone.data();
-                                                    customer.name = name.data();
-                                                    customer.vip = isVIP;
-                                                    term.pop();
-                                                });
-                                            }, L"应用"),
+                                                btn.setActionListener(
+                                                        [&term, &number, &name, &telephone, &id, &level, &staff] {
+                                                            staff.cardID = number.data();
+                                                            staff.name = name.data();
+                                                            staff.telephone = telephone.data();
+                                                            staff.id = id.data();
+                                                            staff.level = level.data();
+                                                            term.pop();
+                                                        });
+                                            }, L"添加"),
                                     ui<Struct>(1, 3),
                                     ui_args<WTextButton>([&term](WTextButton &btn) {
                                         btn.setFocusOrder(6);
@@ -145,16 +144,15 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                     )
             )
     );
-
     term.push(widget);
     term.invalidate();
     term.capture();
     term.invalidate();
 }
 
-void page::customerAccountPage(tui::Term &term) {
+void page::staffManagerPage(tui::Term &term) {
     using namespace tui;
-    auto &db = Database::getInstance()->customer;
+    auto &db = Database::getInstance()->staff;
     short curPage = 0;
 
     auto widget = ui<Center>(
@@ -165,7 +163,7 @@ void page::customerAccountPage(tui::Term &term) {
                                     ui<Box>(
                                             ui<HListView>(std::make_shared<Struct>(1, 4),
                                                           ui<WText>(
-                                                                  L"客户账户管理"),
+                                                                  L"银行职员管理"),
                                                           ui<Struct>(1, 4)
                                             )
                                     )
@@ -173,14 +171,12 @@ void page::customerAccountPage(tui::Term &term) {
                     ),
                     ui<Struct>(2, 2),
                     ui<Box>(
-                            ui_args<TableBuilder<15, 7, LinkedList<Customer>, Customer>>(
-                                    [](TableBuilder<15, 7, LinkedList<Customer>, Customer> &t) {
+                            ui_args<TableBuilder<11, 7, LinkedList<Staff>, Staff>>(
+                                    [](TableBuilder<11, 7, LinkedList<Staff>, Staff> &t) {
                                         t.setHeader(tableRow(
                                                 ui<WText>(L"#"),
                                                 ui<Struct>(1, 1),
-                                                ui<WText>(L"VIP"),
-                                                ui<Struct>(1, 1),
-                                                ui<WText>(L"账户号"),
+                                                ui<WText>(L"员工编号"),
                                                 ui<Struct>(1, 1),
                                                 ui<WText>(L"姓名"),
                                                 ui<Struct>(1, 1),
@@ -188,15 +184,11 @@ void page::customerAccountPage(tui::Term &term) {
                                                 ui<Struct>(1, 1),
                                                 ui<WText>(L"身份证号"),
                                                 ui<Struct>(1, 1),
-                                                ui<WText>(L"余额"),
-                                                ui<Struct>(1, 1),
-                                                ui<WText>(L"借贷")
+                                                ui<WText>(L"职位")
                                         ));
-                                    }, curPage, db, [](short index, Customer &data) {
+                                    }, curPage, db, [](short index, Staff &data) {
                                         return tableRow(
                                                 ui<Text>(std::to_string(index)),
-                                                ui<Struct>(1, 1),
-                                                ui<Checkbox>(&data.vip),
                                                 ui<Struct>(1, 1),
                                                 ui<Text>(data.cardID),
                                                 ui<Struct>(1, 1),
@@ -206,9 +198,7 @@ void page::customerAccountPage(tui::Term &term) {
                                                 ui<Struct>(1, 1),
                                                 ui<Text>(data.id),
                                                 ui<Struct>(1, 1),
-                                                ui<Text>(std::to_string(data.amount)),
-                                                ui<Struct>(1, 1),
-                                                ui<Text>("-" + std::to_string(data.debit)));
+                                                ui<Text>(data.level));
                                     }
                             )
                     ),
@@ -242,7 +232,7 @@ void page::customerAccountPage(tui::Term &term) {
                                     ui_args<WTextButton>([&term](WTextButton &b) {
                                                              b.setFocusOrder(2);
                                                              b.setActionListener([&term]() {
-                                                                 customerAccountAddPage(term);
+                                                                 staffAddManager(term);
                                                                  term.rebuild();
                                                                  term.invalidate();
                                                              });
@@ -264,7 +254,7 @@ void page::customerAccountPage(tui::Term &term) {
                                                                      ss << value.value();
                                                                      int v;
                                                                      ss >> v;
-                                                                     auto &db = Database::getInstance()->customer;
+                                                                     auto &db = Database::getInstance()->staff;
                                                                      if (v < 0 || v >= db.size()) {
                                                                          msgbox<wchar_t, wchar_t, wchar_t>(
                                                                                  term,
@@ -276,7 +266,7 @@ void page::customerAccountPage(tui::Term &term) {
 
                                                                      auto iter = db.begin();
                                                                      for (int i = 0; i < v; i++) ++iter;
-                                                                     customerAccountEditPage(term, *iter);
+                                                                     staffEditPage(term, *iter);
                                                                      term.rebuild();
                                                                  }
                                                                  term.invalidate();
@@ -297,7 +287,7 @@ void page::customerAccountPage(tui::Term &term) {
                                                                  );
                                                                  if (value.has_value()) {
                                                                      auto pattern = value.value();
-                                                                     auto &db = Database::getInstance()->customer;
+                                                                     auto &db = Database::getInstance()->staff;
                                                                      int cnt = 0;
                                                                      bool found = false;
                                                                      for (auto iter = db.begin(); iter != db.end(); ++iter, ++cnt) {
@@ -338,7 +328,7 @@ void page::customerAccountPage(tui::Term &term) {
                                                                      ss << value.value();
                                                                      int v;
                                                                      ss >> v;
-                                                                     auto &db = Database::getInstance()->customer;
+                                                                     auto &db = Database::getInstance()->staff;
                                                                      if (v < 0 || v >= db.size()) {
                                                                          msgbox<wchar_t, wchar_t, wchar_t>(
                                                                                  term,
