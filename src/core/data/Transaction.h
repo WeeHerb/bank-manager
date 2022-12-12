@@ -10,6 +10,7 @@
 
 struct Transaction {
     long long timestamp;
+    std::string name;
     long double offset;
 
     [[nodiscard]] std::string timeStr() const {

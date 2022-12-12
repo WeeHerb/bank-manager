@@ -45,12 +45,15 @@ void servicePage(tui::Term &term, Customer &item) {
                     ui<HCenter>(
                             ui_args<WTextButton>([&term, &item](WTextButton &t) {
                                 t.setActionListener([&term, &item]() {
+                                    auto name = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入业务名", true,
+                                                                                          L"确定", true, L"取消");
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入存款", true,
                                                                                            L"存入", true, L"取消");
-                                    if (value.has_value()) {
+                                    if (value.has_value() && name.has_value()) {
                                         long double v = std::stold(value.value());
                                         item.amountChange.push_back(Transaction{
                                                 (long long) time(nullptr),
+                                                name.value(),
                                                 v
                                         });
                                     }
@@ -62,12 +65,15 @@ void servicePage(tui::Term &term, Customer &item) {
                             ui_args<WTextButton>([&term, &item](WTextButton &t) {
                                 t.setFocusOrder(2);
                                 t.setActionListener([&term, &item]() {
+                                    auto name = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入业务名", true,
+                                                                                          L"确定", true, L"取消");
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入取款", true,
                                                                                            L"去出", true, L"取消");
-                                    if (value.has_value()) {
+                                    if (value.has_value() && name.has_value()) {
                                         long double v = std::stold(value.value());
                                         item.amountChange.push_back(Transaction{
                                                 (long long) time(nullptr),
+                                                name.value(),
                                                 -v
                                         });
                                     }
@@ -79,13 +85,16 @@ void servicePage(tui::Term &term, Customer &item) {
                             ui_args<WTextButton>([&term, &item](WTextButton &t) {
                                 t.setFocusOrder(3);
                                 t.setActionListener([&term, &item]() {
+                                    auto name = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入业务名", true,
+                                                                                          L"确定", true, L"取消");
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入贷款金额",
                                                                                            true,
                                                                                            L"贷款", true, L"取消");
-                                    if (value.has_value()) {
+                                    if (value.has_value() && name.has_value()) {
                                         long double v = std::stold(value.value());
                                         item.debitChange.push_back(Transaction{
                                                 (long long) time(nullptr),
+                                                name.value(),
                                                 v
                                         });
                                     }
@@ -96,13 +105,16 @@ void servicePage(tui::Term &term, Customer &item) {
                             ui_args<WTextButton>([&term, &item](WTextButton &t) {
                                 t.setFocusOrder(4);
                                 t.setActionListener([&term, &item]() {
+                                    auto name = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入业务名", true,
+                                                                                          L"确定", true, L"取消");
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入还款金额",
                                                                                            true,
                                                                                            L"还款", true, L"取消");
-                                    if (value.has_value()) {
+                                    if (value.has_value() && name.has_value()) {
                                         long double v = std::stold(value.value());
                                         item.debitChange.push_back(Transaction{
                                                 (long long) time(nullptr),
+                                                name.value(),
                                                 -v
                                         });
                                     }
