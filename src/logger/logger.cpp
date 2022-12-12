@@ -2,7 +2,7 @@
 // Created by mslxl on 11/6/2022.
 //
 
-#include <sys/time.h>
+#include <time.h>
 #include <iostream>
 #include "logger.h"
 

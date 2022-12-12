@@ -53,4 +53,8 @@ namespace tui {
         return false;
     }
 
+    void Widget::rebuild() {
+
+    }
+
 } // tui

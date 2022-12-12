@@ -36,6 +36,8 @@ namespace tui {
 
         void draw(Canvas &canvas) override;
 
+        void rebuild() override;
+
         friend class HListView;
     };
 

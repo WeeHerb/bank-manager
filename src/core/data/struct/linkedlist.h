@@ -33,11 +33,11 @@ public:
     explicit LinkedListIter(pointer init) : Iter(init), end(false) {
     }
 
-    bool operator==(const LinkedListIter &rhs) const noexcept {
+    bool operator==(const LinkedListIter &rhs) const  {
         return Iter == rhs.Iter && end == rhs.end;
     }
 
-    bool operator!=(const LinkedListIter &rhs) const noexcept {
+    bool operator!=(const LinkedListIter &rhs) const  {
         return Iter != rhs.Iter || end != rhs.end;
     }
 
@@ -80,7 +80,7 @@ class LinkedList {
 private:
     LinkedListNode<T> *first;
     LinkedListNode<T> *last;
-    std::size_t size;
+    std::size_t nodeNum;
 
     void freeNode(LinkedListNode<T> *node) {
         if (node == nullptr) return;
@@ -97,12 +97,12 @@ private:
     }
 
 public:
-    LinkedList() : first(nullptr), last(nullptr) , size(0){
+    LinkedList() : first(nullptr), last(nullptr) , nodeNum(0){
     }
 
     void clear() {
         freeNode(first);
-        size = 0;
+        nodeNum = 0;
     }
 
     ~LinkedList() {
@@ -110,7 +110,7 @@ public:
     }
 
     void push_front(T data) {
-        size++;
+        nodeNum++;
         if (first == nullptr && last == nullptr) {
             initWith(data);
             return;
@@ -124,7 +124,7 @@ public:
 
 
     void push_back(T data) {
-        size++;
+        nodeNum++;
         if (first == nullptr && last == nullptr) {
             initWith(data);
             return;
@@ -150,7 +150,7 @@ public:
     }
 
     void insert(LinkedListIter<T> &iter, T data) {
-        size++;
+        nodeNum++;
         if (empty()) {
             push_back(data);
             return;
@@ -176,7 +176,7 @@ public:
 
     LinkedListIter<T> erase(LinkedListIter<T> &iter) {
         assert(!iter.end);
-        size--;
+        nodeNum--;
         if (iter.Iter->next == nullptr && iter.Iter->prev == nullptr && iter.Iter == first) {
             delete first;
             first = nullptr;
@@ -212,6 +212,9 @@ public:
 
     bool empty() {
         return first == nullptr && last == nullptr;
+    }
+    std::size_t size(){
+        return nodeNum;
     }
 
     friend LinkedListIter<T>;

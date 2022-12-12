@@ -21,6 +21,8 @@ namespace tui {
         bool measure(std::pair<short, short> parentSize) override;
 
         void draw(Canvas &canvas) override;
+
+        void rebuild() override;
     };
 
 } // tui
