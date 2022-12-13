@@ -7,6 +7,7 @@
 #include "staff_manager.h"
 #include "cash_reception.h"
 #include "transaction_query.h"
+#include "bank_queue.h"
 
 void page::menuPage(tui::Term &term) {
     using namespace tui;
@@ -49,22 +50,22 @@ void page::menuPage(tui::Term &term) {
                             transactionQueryPage(term);
                         });
                     }, ui<WText>(L"4.业务查询")),
-                    ui_args<Button>([](Button &b) {
+                    ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(4);
+                        b.setActionListener([&term](){
+                            queuePage(term);
+                        });
                     }, ui<WText>(L"5.银行排队管理")),
                     ui_args<Button>([](Button &b) {
                         b.setFocusOrder(5);
                     }, ui<WText>(L"6.银行网点查询")),
-                    ui_args<Button>([](Button &b) {
-                        b.setFocusOrder(6);
-                    }, ui<WText>(L"7.客户资料查询")),
                     ui<Struct>(2, 1),
 
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<Button>(
                                             [](Button &b) {
-                                                b.setFocusOrder(7);
+                                                b.setFocusOrder(6);
                                             },
                                             ui<Box>(
                                                     std::make_shared<WText>(L"保存退出")
@@ -73,7 +74,7 @@ void page::menuPage(tui::Term &term) {
                                     ui<Struct>(1, 8),
                                     ui_args<Button>(
                                             [&term](Button &b) {
-                                                b.setFocusOrder(8);
+                                                b.setFocusOrder(7);
                                                 b.setActionListener([&term](){
                                                     term.pop();
                                                     term.invalidate();
