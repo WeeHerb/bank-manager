@@ -21,8 +21,8 @@ namespace AES{
 
         sc.close();
         point = 0;
-        js=0;
-        has_de=false;
+        point_in_end=-1;
+        point_in_begin=0;
         place=0;
     }
 
@@ -40,9 +40,9 @@ namespace AES{
         sc.close();
 
         point=0;
-        js=0;
-        has_de=false;
         place=0;
+        point_in_end=-1;
+        point_in_begin=0;
 
         //std:: cout<<"Asdasfagsas";
     }
@@ -106,26 +106,59 @@ namespace AES{
         this->point=0;
     }
 
-    void aes_io::read(char *full,int len,char *key){
-        if(!has_de) num=new char[10001]; 
-        char ch;
+    void aes_io::sync_in(){
+        char ch; int js=0;
+        char num[50];
         while(in_file->get(ch)){
             num[js]=ch; js++;
+            if(js==32) break;
         }
-        num[js]='\0';
         u_aes sc(num,key);
-        char *ans=sc.decrypt();
-        for(int i=0;i<js;i++){
-            num[i]=ans[i];
+        char *sec=sc.decrypt();
+        int len_sec=strlen(sec);
+        for(int i=0;i<len_sec;i++){
+            buff_in[i]=sec[i];
         }
 
+        point_in_begin=0;
+        point_in_end=len_sec-1;
         sc.close();
+    }
 
-//    std:: cout<<len<<std::endl;
-        for(int i=0;i<js;i++){
-            full[i]=num[place+i];
+    void aes_io::read(char *full,int len,char *key){
+        int buff_len=point_in_end-point_in_begin+1;
+        if(buff_len==0){
+            sync_in();
+            buff_len=point_in_end-point_in_begin+1;
         }
-        place+=len;
+
+        //std:: cout<<"buff_len is ok"<<buff_len<<std:: endl;
+        
+        if(buff_len>len){
+            for(int i=0;i<len;i++){
+                full[i]=buff_in[point_in_begin]; point_in_begin++;
+            }
+        }else if(buff_len==len){
+            for(int i=point_in_begin;i<=point_in_end;i++){
+                full[i]=buff_in[i]; point_in_begin++;
+            }
+            sync_in();
+        }else{
+            for(int i=point_in_begin;i<point_in_end;i++){
+                full[i]=buff_in[i]; point_in_begin++;
+            }
+            int point_full=buff_len;
+            sync_in();
+            while (point_full<len){
+                if(point_in_begin<=point_in_end){
+                    full[point_full]=buff_in[point_in_begin];
+                    point_in_begin++;
+                    point_full++;
+                }else{
+                    sync_in();
+                }
+            }
+        }
     }
 
     aes_io::~aes_io(){
@@ -134,6 +167,5 @@ namespace AES{
         out_file->close();
         delete in_file;
         delete out_file;
-        delete num;
     }
 }

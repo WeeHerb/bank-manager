@@ -10,10 +10,11 @@ namespace AES{
         char key[17];
         char buff[16];
 
-        char *num;
+        char buff_in[50];
+        int point_in_end;
+        int point_in_begin;
+        
         int place;
-        bool has_de;
-        int js;
         int point;
         std:: ofstream *out_file=NULL;
         std:: ifstream *in_file=NULL;
@@ -23,6 +24,7 @@ namespace AES{
         char *get_key();
         void write(const char *);
         void sync();
+        void sync_in();
         void read(char *full,int,char *key);
         ~aes_io();
     };
