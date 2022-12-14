@@ -60,20 +60,23 @@ void page::mapPage(tui::Term &term) {
                                     )
                             )
                     ),
+                    ui<Struct>(2,2),
                     ui<WText>(L"所有网点："),
-                    ui_args<TableBuilder<3, 4, std::vector<int>, int>>(
-                            [](TableBuilder<3, 4, std::vector<int>, int> &table) {
-                                table.setHeader(tableRow(
-                                        ui<WText>(L"位置"),
-                                        ui<Struct>(1, 1),
-                                        ui<WText>(L"编号")
-                                ));
-                            }, curPage, endPoint, [&graph](short index, int target) {
-                                return tableRow(
-                                        ui<Text>(graph.name[target]),
-                                        ui<Struct>(1, 1),
-                                        ui<WText>(std::to_wstring(target) + L" 号网点"));
-                            }),
+                    ui<Box>(
+                            ui_args<TableBuilder<3, 4, std::vector<int>, int>>(
+                                    [](TableBuilder<3, 4, std::vector<int>, int> &table) {
+                                        table.setHeader(tableRow(
+                                                ui<WText>(L"位置"),
+                                                ui<Struct>(1, 1),
+                                                ui<WText>(L"编号")
+                                        ));
+                                    }, curPage, endPoint, [&graph](short index, int target) {
+                                        return tableRow(
+                                                ui<Text>(graph.name[target]),
+                                                ui<Struct>(1, 1),
+                                                ui<WText>(std::to_wstring(target) + L" 号网点"));
+                                    })
+                    ),
                     ui<Struct>(2, 2),
                     ui<HCenter>(
                             ui<HListView>(
@@ -96,8 +99,8 @@ void page::mapPage(tui::Term &term) {
                                         t.setActionListener([&endPoint, &term, &graph]() {
                                                                 auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term,
                                                                                                                        L"请输入地点",
-                                                                                                                       true,L"确定",
-                                                                                                                       true,L"取消");
+                                                                                                                       true, L"确定",
+                                                                                                                       true, L"取消");
                                                                 if (!value.has_value()) {
                                                                     return;
                                                                 }
@@ -115,7 +118,7 @@ void page::mapPage(tui::Term &term) {
                                                                 int weight = 0;
 
                                                                 while (!queue.empty()) {
-                                                                    auto w = queue.top().w, u = queue.top().v, p =queue.top().parent;
+                                                                    auto w = queue.top().w, u = queue.top().v, p = queue.top().parent;
                                                                     parent[u] = p;
                                                                     vis[u] = true;
                                                                     queue.pop();
@@ -126,7 +129,7 @@ void page::mapPage(tui::Term &term) {
                                                                             goto end; //my fault :(
                                                                         }
                                                                         if (vis[e.to]) continue;
-                                                                        queue.push(route{e.data+w, e.to, u});
+                                                                        queue.push(route{e.data + w, e.to, u});
                                                                     }
                                                                 }
                                                                 end:
