@@ -66,7 +66,7 @@ void ratePage(tui::Term &term) {
     term.push(widget);
     term.invalidate();
     term.capture();
-    std::terminate();
+    term.invalidate();
 
 }
 
