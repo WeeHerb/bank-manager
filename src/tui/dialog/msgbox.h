@@ -49,7 +49,7 @@ namespace tui {
                                                             confirm,
                                                             ui_args<Button>(
                                                                     [&ans, &term](Button &b) {
-                                                                        b.setFocusOrder(1);
+                                                                        b.setFocusOrder(0);
                                                                         b.setActionListener([&ans, &term]() {
                                                                             ans = true;
                                                                             term.pop();
@@ -63,7 +63,7 @@ namespace tui {
                                                             cancel,
                                                             ui_args<Button>(
                                                                     [&ans, &term](Button &b) {
-                                                                        b.setFocusOrder(2);
+                                                                        b.setFocusOrder(1);
                                                                         b.setActionListener([&ans, &term]() {
                                                                             ans = false;
                                                                             term.pop();
