@@ -56,7 +56,19 @@ void customerAccountAddPage(tui::Term &term) {
                                             [&term, &number, &name, &telephone, &id, &isVIP, &pwd](WTextButton &btn) {
                                                 btn.setFocusOrder(6);
                                                 btn.setActionListener(
+
                                                         [&term, &number, &name, &telephone, &id, &isVIP, &pwd] {
+                                                            auto &db = Database::getInstance()->customer;
+                                                            if (db.end() != std::find_if(db.begin(), db.end(),
+                                                                                         [&number](const Customer &c) {
+                                                                                             return c.cardID ==
+                                                                                                    number.data();
+                                                                                         })) {
+                                                                msgbox<wchar_t, wchar_t, wchar_t>(term, L"该卡号已存在",
+                                                                                                  true, L"确定", false,
+                                                                                                  L"");
+                                                                return;
+                                                            }
                                                             Customer newCustomer{
                                                                     number.data(),
                                                                     pwd.data(),
@@ -66,7 +78,7 @@ void customerAccountAddPage(tui::Term &term) {
                                                                     isVIP,
                                                                     {}, {}
                                                             };
-                                                            Database::getInstance()->customer.push_back(newCustomer);
+                                                            db.push_back(newCustomer);
                                                             term.pop();
                                                         });
                                             }, L"添加"),
@@ -89,8 +101,6 @@ void customerAccountAddPage(tui::Term &term) {
 
 void customerAccountEditPage(tui::Term &term, Customer &customer) {
     using namespace tui;
-    std::vector<char> number(customer.cardID.begin(), customer.cardID.end());
-    number.push_back('\0');
 
     std::vector<char> name(customer.name.begin(), customer.name.end());
     name.push_back('\0');
@@ -109,26 +119,23 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
             ui<VListView>(
                     ui<Box>(
                             ui<Table<2>>(
-                                    tableRow(ui<WText>(L"卡号:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(0);
-                                    }, &number, 20)),
                                     tableRow(ui<WText>(L"原密码:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(1);
+                                        b.setFocusOrder(0);
                                     }, &oldPwd, 20)),
                                     tableRow(ui<WText>(L"新密码:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(2);
+                                        b.setFocusOrder(1);
                                     }, &newPwd, 20)),
                                     tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(3);
+                                        b.setFocusOrder(2);
                                     }, &name, 20)),
                                     tableRow(ui<WText>(L"电话:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(4);
+                                        b.setFocusOrder(3);
                                     }, &telephone, 20)),
                                     tableRow(ui<WText>(L"身份证:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(5);
+                                        b.setFocusOrder(4);
                                     }, &id, 20)),
                                     tableRow(ui<Text>(" VIP:"), ui_args<Checkbox>([](Checkbox &b) {
-                                        b.setFocusOrder(6);
+                                        b.setFocusOrder(5);
                                     }, &isVIP))
 
                             )
@@ -137,11 +144,11 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<WTextButton>(
-                                            [&term, &number, &name, &telephone, &id, &isVIP, &customer, &newPwd, &oldPwd](
+                                            [&term, &name, &telephone, &id, &isVIP, &customer, &newPwd, &oldPwd](
                                                     WTextButton &btn) {
-                                                btn.setFocusOrder(7);
+                                                btn.setFocusOrder(6);
                                                 btn.setActionListener(
-                                                        [&term, &number, &name, &telephone, &id, &isVIP, &customer, &oldPwd, &newPwd] {
+                                                        [&term, &name, &telephone, &id, &isVIP, &customer, &oldPwd, &newPwd] {
                                                             if (std::string(oldPwd.data()) != customer.password) {
                                                                 msgbox<wchar_t, wchar_t, wchar_t>(term, L"密码错误",
                                                                                                   true, L"确定", false,
@@ -151,7 +158,6 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                                                             if (newPwd.size() > 1) {
                                                                 customer.password = newPwd.data();
                                                             }
-                                                            customer.cardID = number.data();
                                                             customer.id = id.data();
                                                             customer.telephone = telephone.data();
                                                             customer.name = name.data();
@@ -161,7 +167,7 @@ void customerAccountEditPage(tui::Term &term, Customer &customer) {
                                             }, L"应用"),
                                     ui<Struct>(1, 3),
                                     ui_args<WTextButton>([&term](WTextButton &btn) {
-                                        btn.setFocusOrder(8);
+                                        btn.setFocusOrder(7);
                                         btn.setActionListener([&term] {
                                             term.pop();
                                         });

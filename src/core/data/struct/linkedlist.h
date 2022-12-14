@@ -24,7 +24,8 @@ template<typename T>
 class LinkedList;
 
 template<typename T>
-class LinkedListIter {
+class LinkedListIter : public std::iterator<std::forward_iterator_tag, T> {
+
 public:
     using value_tpye = T;
     using reference = T &;
@@ -33,11 +34,11 @@ public:
     explicit LinkedListIter(pointer init) : Iter(init), end(false) {
     }
 
-    bool operator==(const LinkedListIter &rhs) const  {
+    bool operator==(const LinkedListIter &rhs) const {
         return Iter == rhs.Iter && end == rhs.end;
     }
 
-    bool operator!=(const LinkedListIter &rhs) const  {
+    bool operator!=(const LinkedListIter &rhs) const {
         return Iter != rhs.Iter || end != rhs.end;
     }
 
@@ -97,7 +98,7 @@ private:
     }
 
 public:
-    LinkedList() : first(nullptr), last(nullptr) , nodeNum(0){
+    LinkedList() : first(nullptr), last(nullptr), nodeNum(0) {
     }
 
     void clear() {
@@ -213,7 +214,8 @@ public:
     bool empty() {
         return first == nullptr && last == nullptr;
     }
-    std::size_t size(){
+
+    std::size_t size() {
         return nodeNum;
     }
 
