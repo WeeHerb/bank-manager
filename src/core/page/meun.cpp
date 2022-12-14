@@ -8,9 +8,11 @@
 #include "cash_reception.h"
 #include "transaction_query.h"
 #include "bank_queue.h"
+#include "login.h"
 
 #include "core/data/database.h"
 #include "bank_map.h"
+#include "tui/dialog/msgbox.h"
 
 void page::menuPage(tui::Term &term) {
     using namespace tui;
@@ -31,37 +33,39 @@ void page::menuPage(tui::Term &term) {
                     ui<Struct>(2, 1),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(0);
-                        b.setActionListener([&term](){
-                            staffManagerPage(term);
+                        b.setActionListener([&term]() {
+                            if (page::loginPage(term))
+                                staffManagerPage(term);
                         });
                     }, ui<WText>(L"1.银行职员管理")),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(1);
-                        b.setActionListener([&term](){
-                            customerAccountPage(term);
+                        b.setActionListener([&term]() {
+                            if (page::loginPage(term))
+                                customerAccountPage(term);
                         });
                     }, ui<WText>(L"2.客户账号管理")),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(2);
-                        b.setActionListener([&term](){
+                        b.setActionListener([&term]() {
                             cashReceptionPage(term);
                         });
                     }, ui<WText>(L"3.存取贷业务管理")),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(3);
-                        b.setActionListener([&term](){
+                        b.setActionListener([&term]() {
                             transactionQueryPage(term);
                         });
                     }, ui<WText>(L"4.业务查询")),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(4);
-                        b.setActionListener([&term](){
+                        b.setActionListener([&term]() {
                             queuePage(term);
                         });
                     }, ui<WText>(L"5.银行排队管理")),
                     ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(5);
-                        b.setActionListener([&term](){
+                        b.setActionListener([&term]() {
                             mapPage(term);
                         });
                     }, ui<WText>(L"6.银行网点查询")),
@@ -72,10 +76,9 @@ void page::menuPage(tui::Term &term) {
                                     ui_args<Button>(
                                             [&term](Button &b) {
                                                 b.setFocusOrder(6);
-                                                b.setActionListener([&term](){
+                                                b.setActionListener([&term]() {
                                                     Database::getInstance()->flush();
-                                                    term.pop();
-                                                    term.invalidate();
+                                                    std::exit(0);
                                                 });
 
                                             },
@@ -87,9 +90,11 @@ void page::menuPage(tui::Term &term) {
                                     ui_args<Button>(
                                             [&term](Button &b) {
                                                 b.setFocusOrder(7);
-                                                b.setActionListener([&term](){
-                                                    term.pop();
-                                                    term.invalidate();
+                                                b.setActionListener([&term]() {
+                                                    if (msgbox<wchar_t, wchar_t, wchar_t>(term, L"退出并不保存信息?",
+                                                                                          true, L"确定",
+                                                                                          true, L"取消"))
+                                                        std::exit(0);
                                                 });
                                             },
                                             ui<Box>(

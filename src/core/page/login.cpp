@@ -6,9 +6,10 @@
 #include "meun.h"
 #include "tui/dialog/msgbox.h"
 
-void page::loginPage(tui::Term &term) {
+bool page::loginPage(tui::Term &term) {
     using namespace tui;
     std::vector<char> user, pwd;
+    bool success = false;
 
     auto widget = ui<Center>(
             ui<Box>(
@@ -36,21 +37,23 @@ void page::loginPage(tui::Term &term) {
                             ui<HCenter>(
                                     ui<HListView>(
                                             ui_args<Button>(
-                                                    [&term, &user, &pwd](Button &b) {
+                                                    [&term, &user, &pwd, &success](Button &b) {
                                                         b.setFocusOrder(2);
-                                                        b.setActionListener([&term, &user, &pwd]() {
+                                                        b.setActionListener([&term, &user, &pwd, &success]() {
                                                             if (std::string_view("admin") == user.data()
                                                                 && std::string_view("admin") == pwd.data()) {
 
                                                                 user.clear(), user.push_back('\0');
                                                                 pwd.clear(), pwd.push_back('\0');
 
-                                                                page::menuPage(term);
+                                                                success = true;
+                                                                term.pop();
                                                                 term.invalidate();
                                                             } else {
                                                                 user.clear(), user.push_back('\0');
                                                                 pwd.clear(), pwd.push_back('\0');
 
+                                                                success = false;
                                                                 tui::msgbox<wchar_t, wchar_t, wchar_t>(term,
                                                                                   L"用户名或密码错误",
                                                                                   true, L"确定", false, L".");
@@ -65,10 +68,12 @@ void page::loginPage(tui::Term &term) {
                                             ),
                                             ui<Struct>(1, 10),
                                             ui_args<Button>(
-                                                    [](Button &b) {
+                                                    [&term, &success](Button &b) {
                                                         b.setFocusOrder(3);
-                                                        b.setActionListener([]() {
-                                                            std::exit(0);
+                                                        b.setActionListener([&term, &success]() {
+                                                            success = false;
+                                                            term.pop();
+                                                            term.invalidate();
                                                         });
                                                     },
                                                     ui<Box>(
@@ -86,4 +91,5 @@ void page::loginPage(tui::Term &term) {
     term.push(widget);
     term.invalidate();
     term.capture();
+    return success;
 }
