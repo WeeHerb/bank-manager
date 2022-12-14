@@ -9,6 +9,9 @@
 #include "transaction_query.h"
 #include "bank_queue.h"
 
+#include "core/data/database.h"
+#include "bank_map.h"
+
 void page::menuPage(tui::Term &term) {
     using namespace tui;
     auto widget = ui<Center>(
@@ -56,16 +59,25 @@ void page::menuPage(tui::Term &term) {
                             queuePage(term);
                         });
                     }, ui<WText>(L"5.银行排队管理")),
-                    ui_args<Button>([](Button &b) {
+                    ui_args<Button>([&term](Button &b) {
                         b.setFocusOrder(5);
+                        b.setActionListener([&term](){
+                            mapPage(term);
+                        });
                     }, ui<WText>(L"6.银行网点查询")),
                     ui<Struct>(2, 1),
 
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<Button>(
-                                            [](Button &b) {
+                                            [&term](Button &b) {
                                                 b.setFocusOrder(6);
+                                                b.setActionListener([&term](){
+                                                    Database::getInstance()->flush();
+                                                    term.pop();
+                                                    term.invalidate();
+                                                });
+
                                             },
                                             ui<Box>(
                                                     std::make_shared<WText>(L"保存退出")

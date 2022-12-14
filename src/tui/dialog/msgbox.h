@@ -17,6 +17,19 @@
 #include "tui/widget/Button.h"
 
 namespace tui {
+    /**
+     * Show message dialog
+     * @tparam T `char` or `wchar_t`, suppose the type the message
+     * @tparam Y
+     * @tparam N
+     * @param term
+     * @param msg
+     * @param confirm
+     * @param confirmText
+     * @param cancel
+     * @param cancelText
+     * @return true if user click confirm button
+     */
     template<class T, class Y=T, class N=T>
     bool
     msgbox(Term &term, std::basic_string<T> msg,
@@ -72,6 +85,20 @@ namespace tui {
         return ans;
     }
 
+    /**
+     *
+     * @tparam CharT currently only support char
+     * @tparam T
+     * @tparam Y
+     * @tparam N
+     * @param term
+     * @param msg
+     * @param confirm
+     * @param confirmText
+     * @param cancel
+     * @param cancelText
+     * @return return std::nullopt if user click cancel, else return std::basic_string<char>. i.e. std::string
+     */
     template<class CharT, class T, class Y=T, class N=T>
     std::optional<std::basic_string<CharT>>
     inputbox(Term &term, std::basic_string<T> msg,

@@ -7,6 +7,11 @@
 #include<string>
 #include<vector>
 
+#include<fstream>
+#include<cstring>
+#include<ostream>
+#include<iostream>
+
 #include "Transaction.h"
 #include "big/BigIntTiny.h"
 

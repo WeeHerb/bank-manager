@@ -129,6 +129,14 @@ void page::queuePage(tui::Term &term) {
                                         t.setFocusOrder(2);
                                     }, L"VIP窗口：下一位")
                             )
+                    ),
+                    ui<HCenter>(
+                            ui_args<WTextButton>([&term](WTextButton &t) {
+                                t.setFocusOrder(3);
+                                t.setActionListener([&term]() {
+                                    term.pop();
+                                });
+                            }, L"返回")
                     )
 
             )

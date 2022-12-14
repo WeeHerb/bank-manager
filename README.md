@@ -7,7 +7,7 @@
   + [ ] ~~Parser Combinator~~
   + [ ] ~~CFG LL(k) 版 SQL~~
 - [X] Wildcard
-- [ ] AES
+- [X] AES
 ## 课程要求
 - [X] 银行职员管理：输入数据建立职员表，添加、删除、修改、查询职员信息（参考通讯录）
 ---
