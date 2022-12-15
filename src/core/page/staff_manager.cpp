@@ -51,6 +51,28 @@ void staffAddManager(tui::Term &term) {
                                             [&term, &number, &name, &telephone, &id, &level](WTextButton &btn) {
                                                 btn.setFocusOrder(5);
                                                 btn.setActionListener([&term, &number, &name, &telephone, &id, &level] {
+                                                    auto &db = Database::getInstance()->staff;
+                                                    if (db.end() != std::find_if(db.begin(), db.end(),
+                                                                                 [&number](const Staff &c) {
+                                                                                     return c.cardID ==
+                                                                                            number.data();
+                                                                                 })) {
+                                                        msgbox<wchar_t, wchar_t, wchar_t>(term, L"该编号已被占用",
+                                                                                          true, L"确定", false,
+                                                                                          L"");
+                                                        return;
+                                                    }
+
+                                                    if (db.end() != std::find_if(db.begin(), db.end(),
+                                                                                 [&id](const Staff &c) {
+                                                                                     return c.cardID ==
+                                                                                            id.data();
+                                                                                 })) {
+                                                        msgbox<wchar_t, wchar_t, wchar_t>(term, L"该职工已存在",
+                                                                                          true, L"确定", false,
+                                                                                          L"");
+                                                        return;
+                                                    }
                                                     Staff staff{
                                                             number.data(),
                                                             name.data(),
@@ -81,9 +103,6 @@ void staffAddManager(tui::Term &term) {
 
 void staffEditPage(tui::Term &term, Staff &staff) {
     using namespace tui;
-    std::vector<char> number(staff.cardID.begin(), staff.cardID.end());
-    number.push_back('\0');
-
     std::vector<char> name(staff.name.begin(), staff.name.end());
     name.push_back('\0');
 
@@ -100,20 +119,17 @@ void staffEditPage(tui::Term &term, Staff &staff) {
             ui<VListView>(
                     ui<Box>(
                             ui<Table<2>>(
-                                    tableRow(ui<WText>(L"员工编号:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(0);
-                                    }, &number, 20)),
                                     tableRow(ui<WText>(L"姓名:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(1);
+                                        b.setFocusOrder(0);
                                     }, &name, 20)),
                                     tableRow(ui<WText>(L"电话:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(2);
+                                        b.setFocusOrder(1);
                                     }, &telephone, 20)),
                                     tableRow(ui<WText>(L"身份证:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(3);
+                                        b.setFocusOrder(2);
                                     }, &id, 20)),
                                     tableRow(ui<WText>(L"职位:"), ui_args<TextField>([](TextField &b) {
-                                        b.setFocusOrder(4);
+                                        b.setFocusOrder(3);
                                     }, &level, 20))
                             )
                     ),
@@ -121,21 +137,20 @@ void staffEditPage(tui::Term &term, Staff &staff) {
                     ui<HCenter>(
                             ui<HListView>(
                                     ui_args<WTextButton>(
-                                            [&term, &number, &name, &telephone, &id, &level, &staff](WTextButton &btn) {
-                                                btn.setFocusOrder(5);
+                                            [&term, &name, &telephone, &id, &level, &staff](WTextButton &btn) {
+                                                btn.setFocusOrder(4);
                                                 btn.setActionListener(
-                                                        [&term, &number, &name, &telephone, &id, &level, &staff] {
-                                                            staff.cardID = number.data();
+                                                        [&term, &name, &telephone, &id, &level, &staff] {
                                                             staff.name = name.data();
                                                             staff.telephone = telephone.data();
                                                             staff.id = id.data();
                                                             staff.level = level.data();
                                                             term.pop();
                                                         });
-                                            }, L"添加"),
+                                            }, L"修改"),
                                     ui<Struct>(1, 3),
                                     ui_args<WTextButton>([&term](WTextButton &btn) {
-                                        btn.setFocusOrder(6);
+                                        btn.setFocusOrder(5);
                                         btn.setActionListener([&term] {
                                             term.pop();
                                         });
