@@ -8,5 +8,5 @@
 #include "tui/Term.h"
 
 namespace page{
-    void loginPage(tui::Term &term);
+    bool loginPage(tui::Term &term);
 }
