@@ -1,150 +1,216 @@
 //
 // Created by mslxl on 11/25/2022.
 //
-
+#include <sstream>
+#include <unistd.h>
 #include "Database.h"
 
-Database *Database::singleton  = nullptr;
+const static char* customerFile = "customer.db";
+const static char* staffFile = "staff.db";
+
+
+Database *Database::singleton = nullptr;
 
 Database *Database::getInstance() {
-    if(singleton == nullptr){
+    if (singleton == nullptr) {
         singleton = new Database;
-
-        std:: ifstream file_customer("data_customer.db");
-        std:: string line;
-        Customer input;
-        while(std::getline(file_customer,line))
-        {
-            input.cardID = line;
-            std::getline(file_customer, line);
-            input.password = line;
-            std::getline(file_customer, line);
-            input.name = line;
-            std::getline(file_customer, line);
-            input.telephone = line;
-            std::getline(file_customer, line);
-            input.id = line;
-            std::getline(file_customer, line);
-            if(line=="0") input.vip= false;
-            else input.vip=true;
-            bool first=false;
-            while (std::getline(file_customer, line)) {
-                if (line == "|"||first== false){
-                    first= true;
-                }
-                else if(line == "|"||first==true) break;
-                else {
-                    Transaction in_tran;
-                    in_tran.name=line;
-                    double in_offset;
-                    file_customer>>in_offset;
-                    //getchar();
-                    in_tran.offset=in_offset;
-                    input.amountChange.push_back(in_tran);
-                    std::getline(file_customer,line);
-                }
+        // read customer info
+        do{
+            if(access(customerFile,F_OK) == -1){
+                break;
             }
-            while (std::getline(file_customer, line)) {
-                if (line == "|") break;
-                else {
-                    Transaction in_deb;
-                    in_deb.name=line;
-                    double in_offset;
-                    file_customer>>in_offset;
-                    //getchar();
-                    in_deb.offset=in_offset;
-                    input.debitChange.push_back(in_deb);
-                    std::getline(file_customer, line);
+
+
+            std::ifstream customer(customerFile);
+
+            std::string line;
+            std::getline(customer, line);
+            std::size_t n = std::stoull(line);
+            for(std::size_t idx = 0; idx < n; idx++){
+                Customer item;
+
+                std::getline(customer, line);
+                item.telephone = line;
+
+                std::getline(customer, line);
+                item.name = line;
+                std::getline(customer, line);
+                item.password =line;
+                std::getline(customer, line);
+                item.cardID =line;
+                std::getline(customer, line);
+                item.id =line;
+                std::getline(customer, line);
+                item.vip = std::stoi(line);
+
+                std::getline(customer, line);
+                std::size_t amountN = std::stoull(line);
+                for(std::size_t amountIdx = 0; amountIdx < amountN; amountIdx++){
+                    Transaction record;
+                    std::getline(customer, line);
+                    record.name = line;
+
+                    std::getline(customer, line);
+                    record.offset = std::stold(line);
+
+                    std::getline(customer, line);
+                    record.timestamp = std::stoll(line);
+                    item.amountChange.push_back(std::move(record));
                 }
+
+                std::getline(customer, line);
+                std::size_t debitN = std::stoull(line);
+                for(std::size_t debitIdx = 0; debitIdx < debitN; debitIdx++){
+                    Transaction record;
+                    std::getline(customer, line);
+                    record.name = line;
+
+                    std::getline(customer, line);
+                    record.offset = std::stold(line);
+
+                    std::getline(customer, line);
+                    record.timestamp = std::stoll(line);
+                    item.debitChange.push_back(std::move(record));
+                }
+                singleton->customer.push_back(item);
             }
-            singleton->customer.push_back(input);
-        }
+        }while(false);
 
-        std:: ifstream file_staff("data_staff.db");
-        Staff input_staff;
-        while(std::getline(file_staff,line))
-        {
-            input_staff.cardID=line;
-            std::getline(file_staff,line);
-            input_staff.name=line;
-            std::getline(file_staff,line);
-            input_staff.telephone=line;
-            std::getline(file_staff,line);
-            input_staff.id=line;
-            std::getline(file_staff,line);
-            input_staff.level=line;
-            singleton->staff.push_back(input_staff);
-        }
+        // read staff info
+        do{
+            if(access(staffFile,F_OK) == -1){
+                break;
+            }
+            std::ifstream staff(staffFile);
+            std::string line;
+            std::getline(staff, line);
+            std::size_t n = std::stoull(line);
+            for(std::size_t idx = 0; idx < n; idx++){
+                Staff item;
+                std::getline(staff, line);
+                item.telephone = line;
+                std::getline(staff, line);
+                item.name = line;
+                std::getline(staff, line);
+                item.cardID =line;
+                std::getline(staff, line);
+                item.id =line;
+                std::getline(staff, line);
+                item.level=line;
+                singleton->staff.push_back(item);
+            }
+        }while(false);
 
-
-
-//        int len_customer=line.size();
-//         std:: string str;
-//
-//        auto cardDelimiter = line.find('@');
-//        input.cardID = line.substr(0, cardDelimiter);
-//        auto passDelimiter = line.find('@',cardDelimiter+1);
-//        input.password = line.substr(cardDelimiter+1,passDelimiter-cardDelimiter);
-//        auto nameDelimiter = line.find('@', passDelimiter+1);
-//        input.name = line.substr(passDelimiter+1, nameDelimiter - passDelimiter);
-//        auto teleDelimiter = line.find('@',nameDelimiter+1);
-//        input.telephone = line.substr(nameDelimiter+1,teleDelimiter - nameDelimiter);
-//        auto idDelimiter = line.find('@',teleDelimiter+1);
-//        input.id = line.substr(teleDelimiter+1,idDelimiter-teleDelimiter);
-//        auto vipDelimiter = line.find('@',idDelimiter+1);
-//        input.vip = line.substr(vipDelimiter+1,vipDelimiter-idDelimiter);
-//
-//        for (int i=0;i<len_customer;i++){
-//            if(line[i]='@') {
-//                input.id = line.substr(0, i);
-//
-//            }
-//        }
-//        singleton->customer.push_back(input);
-
-        //here
     }
+
+
     return singleton;
+
 }
 
+template<typename T>
+std::string to_string(const T &t) {
+    std::ostringstream oss;
+    oss << t;
+    return oss.str();
+}
+
+void saveDoc(){
+    mkdir("doc");
+    auto db = Database::getInstance();
+    char UTF_8BOM[4] = {char(0xEF), char(0xBB), char(0xBF), char(0)};
+    for(auto&item: db->customer){
+        std::ofstream file("doc/" + item.name + ".csv");
+        file << UTF_8BOM;
+        file << "姓名, " << item.name << std::endl;
+        file << "电话, " << item.telephone << std::endl;
+        file << "卡号, " << item.cardID << std::endl;
+        file << "身份证号, " << item.id << std::endl;
+        file << "VIP, " << (item.vip ? "是": "否") << std::endl;
+        file << "余额, " << item.amount() << std::endl;
+        file << "贷款, " << item.debit() << std::endl;
+
+        file << std::endl;
+        file << "余额变化" << std::endl << "时间, 业务, 变化"  << std::endl;
+        for(auto &i : item.amountChange){
+            file << i.timeStr() << ", " << i.name << ", " << i.offset << std::endl;
+        }
+
+        file << std::endl;
+        file << "负债变化" << std::endl << "时间, 业务, 变化"  << std::endl;
+        for(auto &i : item.debitChange){
+            file << i.timeStr() << ", " << i.name << ", " << i.offset << std::endl;
+        }
+    }
+
+}
+
+
 void Database::flush() {
-    std::ofstream file_customer("data_customer.db");
-
-    for(auto iter = this->customer.begin(); iter!= this->customer.end(); ++iter){
-        file_customer<<iter->cardID<<std:: endl;
-        file_customer<<iter->password<<std::endl;
-        file_customer<<iter->name<<std:: endl;
-        file_customer<<iter->telephone<<std:: endl;
-        file_customer<<iter->id<<std:: endl;
-        file_customer<<iter->vip<<std:: endl;
-        file_customer<<"|"<<std:: endl;
-        for(auto vec_am = iter->amountChange.begin();vec_am!=iter->amountChange.end();++vec_am){
-            file_customer<<vec_am->name<<std:: endl;
-            file_customer<<vec_am->offset<<std:: endl;
+    // customer
+    {
+        std::string buff;
+        buff += std::to_string(this->customer.size()) + "\n";
+        for (auto &item: this->customer) {
+            buff += item.telephone + "\n";
+            buff += item.name + "\n";
+            buff += item.password + "\n";
+            buff += item.cardID + "\n";
+            buff += item.id + "\n";
+            buff += std::to_string(int(item.vip)) + "\n";
+            buff += std::to_string(item.amountChange.size()) + "\n";
+            for (auto &amountItem: item.amountChange) {
+                buff += amountItem.name + "\n";
+                buff += std::to_string(amountItem.offset) + "\n";
+                buff += std::to_string(amountItem.timestamp) + "\n";
+            }
+            buff += std::to_string(item.debitChange.size()) + "\n";
+            for (auto &debitItem: item.debitChange) {
+                buff += debitItem.name + "\n";
+                buff += std::to_string(debitItem.offset) + "\n";
+                buff += std::to_string(debitItem.timestamp) + "\n";
+            }
         }
-        file_customer<<"|"<<std:: endl;
-        for(auto vec_deb = iter->debitChange.begin();vec_deb!=iter->debitChange.end();++vec_deb){
-            file_customer<<vec_deb->name<<std:: endl;
-            file_customer<<vec_deb->offset<<std:: endl;
+        int rowSize = buff.size();
+        if (buff.size() % 16 != 0) {
+            buff.resize((buff.size() / 16 + 1) * 16);
+        }else{
+            buff.resize(buff.size() + 16);
         }
-    }
-    file_customer.close();
+        char *origin_data = buff.data();
 
-    std:: ofstream file_staff("data_staff.db");
-    for(auto iter = this->staff.begin();iter!=this->staff.end();++iter){
-        file_staff<<iter->cardID<<std:: endl;
-        file_staff<<iter->name<<std:: endl;
-        file_staff<<iter->telephone<<std:: endl;
-        file_staff<<iter->id<<std:: endl;
-        file_staff<<iter->level<<std:: endl;
+        std::ofstream customer(customerFile);
+        customer << buff;
+        customer.close();
     }
-    file_staff.close();
+
+    //staff
+    {
+        std::string buff;
+        buff += std::to_string(this->staff.size()) + "\n";
+        for (auto &item: this->staff) {
+            buff += item.telephone + "\n";
+            buff += item.name + "\n";
+            buff += item.cardID + "\n";
+            buff += item.id + "\n";
+            buff += item.level + "\n";
+        }
+        if (buff.size() % 16 != 0) {
+            buff.resize((buff.size() / 16 + 1) * 16);
+        }
+        char *origin_data = buff.data();
+        // put your aes code here
+        std::ofstream staff(staffFile);
+        staff << buff;
+        staff.close();
+    }
+    saveDoc();
 
 
 }
 
 void Database::release() {
-    if(singleton != nullptr){
+    if (singleton != nullptr) {
         singleton->flush();
         delete singleton;
         singleton = nullptr;

@@ -119,7 +119,7 @@ void page::mapPage(tui::Term &term) {
 
                                                                 while (!queue.empty()) {
                                                                     auto w = queue.top().w, u = queue.top().v, p = queue.top().parent;
-                                                                    parent[u] = p;
+                                                                    if(!vis[u]) parent[u] = p;
                                                                     vis[u] = true;
                                                                     queue.pop();
                                                                     for (auto e: graph[u]) {
