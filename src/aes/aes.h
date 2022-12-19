@@ -81,6 +81,8 @@ namespace AES{
         aes(const char *key,char *str);
         void run_aes();
         void de_aes();
-        ~aes(){delete this->key;}
+        ~aes(){
+            delete this->key;
+        }
     };
 }

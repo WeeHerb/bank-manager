@@ -3,7 +3,7 @@
 namespace AES{
     class GFMul{
         private:
-        static int GFMul2(int s) {
+        int GFMul2(int s) {
             int result = s << 1;
             int a7 = result & 0x00000100;
 
@@ -15,24 +15,43 @@ namespace AES{
             return result;
         }
 
-        static int GFMul4(int s){
+        int GFMul4(int s){
             return GFMul2(GFMul2(s));
         }
 
-        static int GFMul8(int s){
+        int GFMul8(int s){
             return GFMul2(GFMul4(s));
         }
 
-        static int GFMul3(int s) {
+        int GFMul3(int s) {
             return GFMul2(s) ^ s;
         }
 
-        static int GFMul12(int s){
+        int GFMul12(int s){
             return GFMul8(s) ^ GFMul4(s);
         }
 
+
+
+
         public:
-        explicit GFMul(int a){};
-        static int GFMuln(int n,int s);
+        explicit GFMul(){};
+        //int GFMuln(int n,int s);
+        int GFMuln(int a,int b) {
+            int p = 0;
+            int hi_bit_set;
+            for (int counter = 0; counter < 8; counter++) {
+                if ((b & int(1)) != 0) {
+                    p ^= a;
+                }
+                hi_bit_set = (int) (a & int(0x80));
+                a <<= 1;
+                if (hi_bit_set != 0) {
+                    a ^= 0x1b; /* x^8 + x^4 + x^3 + x + 1 */
+                }
+                b >>= 1;
+            }
+            return p;
+        }
     };
 }
