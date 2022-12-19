@@ -36,7 +36,7 @@ namespace tui {
 
         void rebuild();
 
-        int waitKey();
+        wint_t waitKey();
 
         explicit Term(HANDLE hwnd);
     };

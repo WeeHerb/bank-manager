@@ -57,7 +57,7 @@ namespace tui {
             type = Enter;
         } else if (std::ispunct(first())) {
             type = Symbol;
-        } else {
+        } else if(size >= 2) {
             type = Undecided;
         }
     }

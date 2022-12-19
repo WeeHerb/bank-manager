@@ -10,8 +10,8 @@ namespace tui {
     }
 
     void TextField::draw(Canvas &canvas) {
-        if(text->size() < cols){
-            canvas.fill({short(std::max(text->size()-2, 0ull)), 0}, cols-text->size()+1, ' ');
+        if (text->size() < cols) {
+            canvas.fill({short(std::max(text->size() - 2, 0ull)), 0}, cols - text->size() + 1, ' ');
         }
         if (text->size() < cols) {
             canvas.line({0, 0}, text->data());
@@ -29,17 +29,19 @@ namespace tui {
     }
 
     bool TextField::acceptKey(Keycode keyCode) {
-        if(keyCode.type == Keycode::Enter){
+        if (keyCode.type == Keycode::Enter) {
             return false;
         }
 
         if (keyCode.type == Keycode::Backspace && text->size() >= 2) {
             LoggerPrinter("TextField") << "Erase key\n";
-            text->erase(text->end()-2);
+            text->erase(text->end() - 2);
         } else {
             LoggerPrinter("TextField") << "Insert char " << char(keyCode.first()) << "(" << keyCode.first() << ")"
                                        << "\n";
-            text->insert(text->end() - 1, char(keyCode.first()));
+            for (std::size_t idx = 0; idx < keyCode.size; idx++) {
+                text->insert(text->end() - 1, char(keyCode.data[idx]));
+            }
         }
         return true;
     }
@@ -53,7 +55,7 @@ namespace tui {
     }
 
     TextField::TextField(std::vector<char> *content, short cols) : text(content), cols(cols) {
-        if(text->empty())
+        if (text->empty())
             text->push_back('\0');
     }
 } // tui
