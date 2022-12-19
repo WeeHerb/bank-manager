@@ -2,6 +2,8 @@
 // Created by mslxl on 11/4/2022.
 //
 #include <conio.h>
+#include <locale>
+#include <codecvt>
 
 #include "Term.h"
 #include "Keycode.h"
@@ -30,8 +32,8 @@ namespace tui {
         context.collect(content);
 
         contents.emplace(ContentLayer{
-            content,
-            context
+                content,
+                context
         });
         rebuild();
     }
@@ -43,13 +45,13 @@ namespace tui {
     void Term::draw() {
         auto lastSize = std::make_pair(rows, cols);
         updateSize();
-        if(lastSize != std::make_pair(rows, cols)){
+        if (lastSize != std::make_pair(rows, cols)) {
             needDrawAll = true;
         }
 
         auto content = contents.top();
         Canvas canvas = Canvas(hwnd).limitCoord(1, 1);
-        if(needDrawAll){
+        if (needDrawAll) {
             drawBG();
             needDrawAll = false;
         }
@@ -90,27 +92,37 @@ namespace tui {
 
     void Term::refreshHover() {
         auto ptr = contents.top().context.getHoverPtr();
-        if(ptr.has_value()){
+        if (ptr.has_value()) {
             ptr.value()->hover();
         }
     }
+
     void Term::capture() {
-        if(contents.empty()) std::abort();
+        if (contents.empty()) std::abort();
         refreshHover();
 
         const std::size_t capturedLayout = contents.size();
-        while(contents.size() >= capturedLayout){ //当 当前捕获输入的内容层 被弹出后，停止捕获内容
+        while (contents.size() >= capturedLayout) { //当 当前捕获输入的内容层 被弹出后，停止捕获内容
             this->draw();
             Keycode key;
-            while(key.type == Keycode::Holding){
-                int i = waitKey();
+            while (key.type == Keycode::Holding) {
+                std::wint_t i = waitKey();
                 LoggerPrinter("Term") << "accept key " << i << "\n";
-                if(i == -1){
+                if (i == -1) {
                     return;
                 }
-                key.push(i);
+                if (i > 255) {
+                    // chin
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+                    auto bytes = convert.to_bytes(wchar_t(i));
+                    for (int idx = 0; idx < 3; idx++)
+                        key.push(bytes[idx]);
+
+                } else {
+                    key.push(i);
+                }
             }
-            switch(key.type){
+            switch (key.type) {
                 case Keycode::ArrowUp:
                     contents.top().context.hoverPrev();
                     break;
@@ -118,10 +130,9 @@ namespace tui {
                 case Keycode::Tab:
                     contents.top().context.hoverNext();
                     break;
-                default:
-                {
+                default: {
                     auto ptr = contents.top().context.getHoverPtr();
-                    if(ptr.has_value()){
+                    if (ptr.has_value()) {
                         ptr.value()->acceptKey(key);
                     }
                 }
@@ -133,8 +144,9 @@ namespace tui {
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "readability-convert-member-functions-to-static"
-    int Term::waitKey() {
-        return _getch();
+
+    std::wint_t Term::waitKey() {
+        return _getwch();
     }
 
     void Term::rebuild() {
