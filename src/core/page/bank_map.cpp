@@ -6,6 +6,7 @@
 #include<queue>
 #include <map>
 #include <sstream>
+#include <unistd.h>
 
 #include "bank_map.h"
 #include "core/data/struct/graph.h"
@@ -23,26 +24,47 @@ struct route {
     }
 };
 
+const char* MAP_FILE = "map.csv";
 
 void page::mapPage(tui::Term &term) {
     using namespace tui;
     Graph<int> graph;
-    graph.add_biedge(0, 1, 5);
-    graph.add_biedge(1, 2, 5);
-    graph.add_biedge(2, 3, 2);
-    graph.add_biedge(0, 4, 9);
-    graph.add_biedge(2, 3, 2);
-    graph.add_biedge(2, 3, 8);
-    graph.add_biedge(2, 5, 2);
-    graph.add_biedge(1, 3, 6);
+    if(access(MAP_FILE,F_OK) == -1){
+        auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term,
+                                                               L"无地图信息",
+                                                               true,
+                                                               L"确定", true,
+                                                               L"取消");
+        return;
+    }
+    std::vector<int> endPoint;
 
-    std::vector<int> endPoint{4, 5};
-    graph.name[0] = "下北泽路";
-    graph.name[1] = "A路";
-    graph.name[2] = "B路";
-    graph.name[3] = "C路";
-    graph.name[4] = "D路";
-    graph.name[5] = "E路";
+    std::string line;
+    std::ifstream map_csv(MAP_FILE);
+    std::getline(map_csv, line);
+    std::getline(map_csv, line);
+    while(line[0] != '-'){
+        std::istringstream spliter(line);
+        std::string id,name,end, open;
+        std::getline(spliter, id, ',');
+        std::getline(spliter, name, ',');
+        std::getline(spliter, end, ',');
+        std::getline(spliter, open, ',');
+        graph.name[std::stoi(id)] = name;
+        if(std::stoi(end) && std::stoi(open)) endPoint.push_back(std::stoi(id));
+        std::getline(map_csv, line);
+    }
+    std::getline(map_csv, line);
+    while(std::getline(map_csv, line)){
+        int pt[3];
+        std::istringstream spliter(line);
+        for(int & i : pt){
+            std::string cache;
+            std::getline(spliter,cache, ',');
+            i = std::stoi(cache);
+        }
+        graph.add_biedge(pt[0], pt[1], pt[2]);
+    }
 
     short curPage = 0;
 
@@ -60,7 +82,7 @@ void page::mapPage(tui::Term &term) {
                                     )
                             )
                     ),
-                    ui<Struct>(2,2),
+                    ui<Struct>(2, 2),
                     ui<WText>(L"所有网点："),
                     ui<Box>(
                             ui_args<TableBuilder<3, 4, std::vector<int>, int>>(
@@ -98,7 +120,7 @@ void page::mapPage(tui::Term &term) {
                                         t.setFocusOrder(1);
                                         t.setActionListener([&endPoint, &term, &graph]() {
                                                                 auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term,
-                                                                                                                       L"请输入地点",
+                                                                                                                       L"请输入出发地点",
                                                                                                                        true, L"确定",
                                                                                                                        true, L"取消");
                                                                 if (!value.has_value()) {
@@ -110,48 +132,21 @@ void page::mapPage(tui::Term &term) {
                                                                                           endPoint.end());
 
 
-                                                                std::map<int, int> parent;
-                                                                std::map<int, bool> vis;
-                                                                std::priority_queue<route, std::vector<route>> queue;
-                                                                queue.push(route{0, startPoint, 0});
-                                                                int reachPoint = -1;
-                                                                int weight = 0;
-
-                                                                while (!queue.empty()) {
-                                                                    auto w = queue.top().w, u = queue.top().v, p = queue.top().parent;
-                                                                    if(!vis[u]) parent[u] = p;
-                                                                    vis[u] = true;
-                                                                    queue.pop();
-                                                                    for (auto e: graph[u]) {
-                                                                        if (endPointSet.count(e.to)) {
-                                                                            reachPoint = e.to;
-                                                                            weight = e.data + w;
-                                                                            goto end; //my fault :(
-                                                                        }
-                                                                        if (vis[e.to]) continue;
-                                                                        queue.push(route{e.data + w, e.to, u});
-                                                                    }
-                                                                }
-                                                                end:
-                                                                if (reachPoint == -1) {
-                                                                    msgbox<wchar_t, wchar_t, wchar_t>(term, L"找不到路径", true, L"确定",
-                                                                                                      false, L"");
+                                                                auto result = dijkstra<int>(graph, startPoint, endPointSet);
+                                                                auto route = result.first;
+                                                                if (route.empty()) {
+                                                                    msgbox<char, wchar_t, wchar_t>(term, "无可用路线", true, L"确定",
+                                                                                                   false, L"");
                                                                     return;
-                                                                }
-
-                                                                std::stack<std::string> route;
-                                                                int pt = reachPoint;
-                                                                while (pt != startPoint) {
-                                                                    route.push(graph.name[pt]);
-                                                                    pt = parent[pt];
                                                                 }
 
                                                                 std::stringstream ss;
                                                                 ss << "最短路径为 ";
-                                                                while (!route.empty()) {
-                                                                    ss << route.top() << "->";
+                                                                ss << graph.name[route[0]];
+                                                                for (int i = 1; i < route.size(); i++) {
+                                                                    ss << "->" << graph.name[route[i]];
                                                                 }
-                                                                ss << "网点";
+                                                                ss << "(网点)，全程 " << result.second << " 米";
 
                                                                 msgbox<char, wchar_t, wchar_t>(term, ss.str(), true, L"确定",
                                                                                                false, L"");
