@@ -14,6 +14,7 @@
 #include "tui/dialog/msgbox.h"
 #include "core/data/Database.h"
 #include "core/data/Customer.h"
+#include "core/util.h"
 
 void customerAccountAddPage(tui::Term &term) {
     using namespace tui;
@@ -237,9 +238,9 @@ void page::customerAccountPage(tui::Term &term) {
                                                 ui<Struct>(1, 1),
                                                 ui<Text>(data.id),
                                                 ui<Struct>(1, 1),
-                                                ui<Text>(std::to_string(data.amount())),
+                                                ui<Text>(to_string_with_precision(data.amount(),2)),
                                                 ui<Struct>(1, 1),
-                                                ui<Text>("-" + std::to_string(data.debit())));
+                                                ui<Text>("-" + to_string_with_precision(data.debit(),2)));
                                     }
                             )
                     ),

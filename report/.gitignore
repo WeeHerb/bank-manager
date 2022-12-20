@@ -1,0 +1,13 @@
+/_minted-report
+*.aux
+*.log
+*.out
+*.pdf
+*.gz
+*.toc
+name*.txt
+
+/info.tex
+/suffix.tex
+/contribute_graph.png
+/history.png

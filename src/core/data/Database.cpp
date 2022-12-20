@@ -6,10 +6,10 @@
 #include "Database.h"
 #include "aes/aes.h"
 #include "logger/logger.h"
+#include "core/util.h"
 
 const static char *customerFile = "customer.db";
 const static char *staffFile = "staff.db";
-const static char *sysFile = "sys.db";
 const static char *aesKey = "1234567890abcdef";
 
 
@@ -39,6 +39,7 @@ Database *Database::getInstance() {
                 break;
             }
 
+
             std::ifstream fileIn(customerFile);
             std::string input;
             char ch;
@@ -51,16 +52,6 @@ Database *Database::getInstance() {
                 break;
             }
 
-//            std::string input;
-//            char ch;
-//            while (fileIn.get(ch)){
-//                input+=ch;
-//            }
-//            AES::aes de(aesKey, input.data(),input.size());
-//            de.de_aes();
-
-            //LoggerPrinter("AES") << input;
-            //LoggerFlush();
             std::stringstream customer(input);
 
             std::string line;
@@ -210,13 +201,13 @@ void Database::flush() {
             buff += std::to_string(item.amountChange.size()) + "\n";
             for (auto &amountItem: item.amountChange) {
                 buff += amountItem.name + "\n";
-                buff += std::to_string(amountItem.offset) + "\n";
+                buff += to_string_with_precision(amountItem.offset,2) + "\n";
                 buff += std::to_string(amountItem.timestamp) + "\n";
             }
             buff += std::to_string(item.debitChange.size()) + "\n";
             for (auto &debitItem: item.debitChange) {
                 buff += debitItem.name + "\n";
-                buff += std::to_string(debitItem.offset) + "\n";
+                buff += to_string_with_precision(debitItem.offset,2) + "\n";
                 buff += std::to_string(debitItem.timestamp) + "\n";
             }
         }
@@ -252,6 +243,7 @@ void Database::flush() {
             buff.resize((buff.size() / 16 + 1) * 16);
         }
         char *origin_data = buff.data();
+        // put your aes code here
         std::ofstream staff(staffFile);
         staff << buff;
         staff.close();
