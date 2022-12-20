@@ -5,9 +5,11 @@
 #include <unistd.h>
 #include "Database.h"
 #include "aes/aes.h"
+#include "logger/logger.h"
 
 const static char *customerFile = "customer.db";
 const static char *staffFile = "staff.db";
+const static char *sysFile = "sys.db";
 const static char *aesKey = "1234567890abcdef";
 
 
@@ -37,20 +39,28 @@ Database *Database::getInstance() {
                 break;
             }
 
-
             std::ifstream fileIn(customerFile);
             std::string input;
             char ch;
             while (fileIn.get(ch)) {
+                ch-=10;
                 input += ch;
             }
             fileIn.close();
             if (input.empty()) {
                 break;
             }
-            AES::aes de(aesKey, input.data());
-            de.de_aes();
 
+//            std::string input;
+//            char ch;
+//            while (fileIn.get(ch)){
+//                input+=ch;
+//            }
+//            AES::aes de(aesKey, input.data(),input.size());
+//            de.de_aes();
+
+            //LoggerPrinter("AES") << input;
+            //LoggerFlush();
             std::stringstream customer(input);
 
             std::string line;
@@ -213,11 +223,17 @@ void Database::flush() {
         if (buff.size() % 16 != 0) {
             buff.resize((buff.size() / 16 + 1) * 16);
         }
+        LoggerPrinter("AES") << buff;
         char *origin_data = buff.data();
-        AES::aes en(aesKey, origin_data);
-        en.run_aes();
+        for(int i=0;i<buff.size();i++){
+            buff[i]=buff[i]+10;
+        }
+//        AES::aes en(aesKey,buff.data(),buff.size());
+//        en.run_aes();
         std::ofstream customer(customerFile);
         customer << origin_data;
+        LoggerPrinter("AES") << origin_data;
+        LoggerFlush();
         customer.close();
     }
 
@@ -236,7 +252,6 @@ void Database::flush() {
             buff.resize((buff.size() / 16 + 1) * 16);
         }
         char *origin_data = buff.data();
-        // put your aes code here
         std::ofstream staff(staffFile);
         staff << buff;
         staff.close();

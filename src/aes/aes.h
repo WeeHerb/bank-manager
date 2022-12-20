@@ -40,7 +40,7 @@ namespace AES{
 
         char *key;
         char *str;
-        size_t len;
+        unsigned long long int len;
 
         int w[44];
 
@@ -78,7 +78,7 @@ namespace AES{
         
         void add_round_to_warray(int a_array[4][4],int b_array[4][4]);
         public:
-        aes(const char *key,char *str);
+        aes(const char *key,char *str,unsigned long long len);
         void run_aes();
         void de_aes();
         ~aes(){

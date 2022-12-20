@@ -110,11 +110,17 @@ void page::mapPage(tui::Term &term) {
                                                                                                    true,
                                                                                                    L"确定", true,
                                                                                                    L"取消");
+
                                             if (value.has_value()) {
-                                                endPoint.push_back(std::stoi(value.value()));
+                                                auto id = std::stoi(value.value());
+                                                if(std::find(endPoint.begin(), endPoint.end(), id) != endPoint.end()){
+                                                    std::remove(endPoint.begin(), endPoint.end(), id);
+                                                }else{
+                                                    endPoint.push_back(id);
+                                                }
                                             }
                                         });
-                                    }, L"填加网点"),
+                                    }, L"开关网点"),
                                     ui<Struct>(2, 2),
                                     ui_args<WTextButton>([&endPoint, &term, &graph](WTextButton &t) {
                                         t.setFocusOrder(1);
