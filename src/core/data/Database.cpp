@@ -3,6 +3,7 @@
 //
 #include <sstream>
 #include <unistd.h>
+#include <map>
 #include "Database.h"
 #include "aes/aes.h"
 #include "logger/logger.h"
@@ -44,7 +45,7 @@ Database *Database::getInstance() {
             std::string input;
             char ch;
             while (fileIn.get(ch)) {
-                ch-=10;
+                ch -= 10;
                 input += ch;
             }
             fileIn.close();
@@ -159,9 +160,14 @@ void saveDoc() {
     mkdir("doc");
     auto db = Database::getInstance();
     char UTF_8BOM[4] = {char(0xEF), char(0xBB), char(0xBF), char(0)};
+    std::map<std::string, std::ofstream> files;
     for (auto &item: db->customer) {
-        std::ofstream file("doc/" + item.name + ".csv");
-        file << UTF_8BOM;
+        std::string filename = "doc/" + item.name + item.cardID + ".csv";
+        if (!files.count(filename)) {
+            files[filename] = std::ofstream(filename);
+            files[filename] << UTF_8BOM;
+        }
+        auto &file = files[filename];
         file << "姓名, " << item.name << std::endl;
         file << "电话, " << item.telephone << std::endl;
         file << "卡号, " << item.cardID << std::endl;
@@ -182,6 +188,9 @@ void saveDoc() {
             file << i.timeStr() << ", " << i.name << ", " << i.offset << std::endl;
         }
     }
+    for(auto &[path, stream]: files){
+        stream.close();
+    }
 
 }
 
@@ -201,13 +210,13 @@ void Database::flush() {
             buff += std::to_string(item.amountChange.size()) + "\n";
             for (auto &amountItem: item.amountChange) {
                 buff += amountItem.name + "\n";
-                buff += to_string_with_precision(amountItem.offset,2) + "\n";
+                buff += to_string_with_precision(amountItem.offset, 2) + "\n";
                 buff += std::to_string(amountItem.timestamp) + "\n";
             }
             buff += std::to_string(item.debitChange.size()) + "\n";
             for (auto &debitItem: item.debitChange) {
                 buff += debitItem.name + "\n";
-                buff += to_string_with_precision(debitItem.offset,2) + "\n";
+                buff += to_string_with_precision(debitItem.offset, 2) + "\n";
                 buff += std::to_string(debitItem.timestamp) + "\n";
             }
         }
@@ -216,8 +225,8 @@ void Database::flush() {
         }
         LoggerPrinter("AES") << buff;
         char *origin_data = buff.data();
-        for(int i=0;i<buff.size();i++){
-            buff[i]=buff[i]+10;
+        for (int i = 0; i < buff.size(); i++) {
+            buff[i] = buff[i] + 10;
         }
 //        AES::aes en(aesKey,buff.data(),buff.size());
 //        en.run_aes();
