@@ -7,6 +7,7 @@
 #include "core/data/Database.h"
 #include "tui/dialog/msgbox.h"
 #include "glob/wildcard.hpp"
+#include "core/util.h"
 
 void queryPage(tui::Term &term, Customer &item) {
     using namespace tui;
@@ -47,7 +48,7 @@ void queryPage(tui::Term &term, Customer &item) {
                                                 ui<Struct>(1, 1),
                                                 ui<Text>(transaction.name),
                                                 ui<Struct>(1, 1),
-                                                ui<Text>(std::to_string(transaction.offset))
+                                                ui<Text>(to_string_with_precision(transaction.offset,2))
                                         );
                                     })
                     ),

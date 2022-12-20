@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "Database.h"
 #include "aes/aes.h"
+#include "core/util.h"
 
 const static char *customerFile = "customer.db";
 const static char *staffFile = "staff.db";
@@ -200,13 +201,13 @@ void Database::flush() {
             buff += std::to_string(item.amountChange.size()) + "\n";
             for (auto &amountItem: item.amountChange) {
                 buff += amountItem.name + "\n";
-                buff += std::to_string(amountItem.offset) + "\n";
+                buff += to_string_with_precision(amountItem.offset,2) + "\n";
                 buff += std::to_string(amountItem.timestamp) + "\n";
             }
             buff += std::to_string(item.debitChange.size()) + "\n";
             for (auto &debitItem: item.debitChange) {
                 buff += debitItem.name + "\n";
-                buff += std::to_string(debitItem.offset) + "\n";
+                buff += to_string_with_precision(debitItem.offset,2) + "\n";
                 buff += std::to_string(debitItem.timestamp) + "\n";
             }
         }

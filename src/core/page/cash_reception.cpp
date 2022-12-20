@@ -8,6 +8,7 @@
 #include "core/data/Database.h"
 #include "core/data/Customer.h"
 #include "tui/dialog/msgbox.h"
+#include "core/util.h"
 
 
 void servicePage(tui::Term &term, Customer &item) {
@@ -34,9 +35,9 @@ void servicePage(tui::Term &term, Customer &item) {
                                 t.setActionListener([&term, &item]() {
                                     std::wstring msg = L"";
                                     msg += L"余额(含利息)：";
-                                    msg += std::to_wstring(item.amount());
+                                    msg += to_wstring_with_precision(item.amount(), 2);
                                     msg += L", 借贷：";
-                                    msg += std::to_wstring(item.debit());
+                                    msg += to_wstring_with_precision(item.debit(), 2);
                                     msgbox<wchar_t, wchar_t, wchar_t>(term, msg, true, L"确定", false, L"");
                                 });
 
@@ -50,7 +51,7 @@ void servicePage(tui::Term &term, Customer &item) {
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入存款", true,
                                                                                            L"存入", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
-                                        if(name->empty()){
+                                        if (name->empty()) {
                                             name = "存款";
                                         }
                                         long double v = std::stold(value.value());
@@ -73,7 +74,7 @@ void servicePage(tui::Term &term, Customer &item) {
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入取款", true,
                                                                                            L"去出", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
-                                        if(name->empty()){
+                                        if (name->empty()) {
                                             name = "取款";
                                         }
                                         long double v = std::stold(value.value());
@@ -97,7 +98,7 @@ void servicePage(tui::Term &term, Customer &item) {
                                                                                            true,
                                                                                            L"贷款", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
-                                        if(name->empty()){
+                                        if (name->empty()) {
                                             name = "贷款";
                                         }
                                         long double v = std::stold(value.value());
@@ -120,7 +121,7 @@ void servicePage(tui::Term &term, Customer &item) {
                                                                                            true,
                                                                                            L"还款", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
-                                        if(name->empty()){
+                                        if (name->empty()) {
                                             name = "还款";
                                         }
                                         long double v = std::stold(value.value());
