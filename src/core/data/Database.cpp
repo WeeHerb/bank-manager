@@ -45,14 +45,19 @@ Database *Database::getInstance() {
 
 
             std::ifstream fileIn(customerFile);
+
             std::string input;
             char ch;
-            while (fileIn.get(ch)) {
-                ch -= 10;
-                input += ch;
+            while (fileIn.get(ch)){
+                input+=ch;
             }
             fileIn.close();
-            if (input.empty()) {
+            unsigned long long len = input.size();
+            len = 16*20000;
+            input.resize(len);
+            AES::aes de(aesKey,input.data(),len);
+            de.de_aes();
+            if(input.empty()){
                 break;
             }
 
@@ -243,15 +248,18 @@ void Database::flush() {
             }
         }
         if (buff.size() % 16 != 0) {
-            buff.resize((buff.size() / 16 + 1) * 16);
+            int row_size = buff.size();
+            int new_size = (buff.size()/16)*16+16;
+            //buff.resize((buff.size() / 16 + 1) * 16);
+            for(int i=row_size;i<new_size;i++){
+                buff+='\n';
+            }
         }
         LoggerPrinter("AES") << buff;
         char *origin_data = buff.data();
-        for (int i = 0; i < buff.size(); i++) {
-            buff[i] = buff[i] + 10;
-        }
-//        AES::aes en(aesKey,buff.data(),buff.size());
-//        en.run_aes();
+
+        AES::aes en(aesKey,buff.data(),buff.size());
+        en.run_aes();
         std::ofstream customer(customerFile);
         customer << origin_data;
         LoggerPrinter("AES") << origin_data;
@@ -272,9 +280,9 @@ void Database::flush() {
         }
         if (buff.size() % 16 != 0) {
             buff.resize((buff.size() / 16 + 1) * 16);
+
         }
         char *origin_data = buff.data();
-        // put your aes code here
         std::ofstream staff(staffFile);
         staff << buff;
         staff.close();

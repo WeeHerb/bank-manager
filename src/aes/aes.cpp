@@ -3,14 +3,15 @@
 #include<cstring>
 #include<iostream>
 
+
 namespace AES{
     aes:: aes(const char *key,char *str,unsigned long long len){
-        this->len=len;
         this->key=new char[16+1];
         for(int i=0;i<16;i++){
             this->key[i]=key[i];
         }this->key[16]='\0';
         this->str=str;
+        this->len=len;
     }
     
     int aes:: get_int_from_char(char c){
@@ -48,17 +49,25 @@ namespace AES{
             index = index % 4;
         }
     }
+    int get_left4bit(int num){
+        int left = num & 0x000000f0;
+        return left >> 4;
+    }
+    int get_right4bit(int num){
+        return num & 0x0000000f;
+    }
+
     int aes:: get_num_from_sbox(int index) {
-        auto get_left4bit = [index]()->int{
-            int left = index & 0x000000f0;
-	        return left >> 4;
-        };
-        auto get_right4bit = [index]()->int{
-            return index & 0x0000000f;
-        };
-        int row = get_left4bit();
-        int col = get_right4bit();
+        int row = get_left4bit(index);
+        int col = get_right4bit(index);
         return S[row][col];
+    }
+    int merge_array_to_int(int array[4]){
+        int one = array[0] << 24;
+        int two = array[1] << 16;
+        int three = array[2] << 8;
+        int four = array[3];
+        return one | two | three | four;
     }
     int aes:: T(int num, int round) {
         int num_array[4];
@@ -75,32 +84,22 @@ namespace AES{
         for(int i = 0; i < 4; i++)
             num_array[i] = get_num_from_sbox(num_array[i]);
 
-        auto merge_array_to_int = [num_array]()->int{
-            int one = num_array[0] << 24;
-            int two = num_array[1] << 16;
-            int three = num_array[2] << 8;
-            int four = num_array[3];
-            return one | two | three | four;
-        };
-
-        int result = merge_array_to_int();
+        int result = merge_array_to_int(num_array);
 
         return result ^ Rcon[round];
     }
     void aes:: extend_key(char *key){
-
         for(int i = 0; i < 4; i++)
             w[i] = get_word_from_str(key + i * 4);
 
         for(int i = 4, j = 0; i < 44; i++) {
             if( i % 4 == 0) {
                 w[i] = w[i - 4] ^ T(w[i - 1], j);
-                j++;//下一轮
+                j++;
             }else {
                 w[i] = w[i - 4] ^ w[i - 1];
             }
         }
-
     }
 
     void aes:: convert_to_int_array(char *con_str,int pa[4][4]){
@@ -207,15 +206,8 @@ namespace AES{
 
 
     int aes:: get_num_from_s1box(int index){
-        auto get_left4bit = [index]()->int{
-            int left = index & 0x000000f0;
-	        return left >> 4;
-        };
-        auto get_right4bit = [index]()->int{
-            return index & 0x0000000f;
-        };
-        int row = get_left4bit();
-        int col = get_right4bit();
+        int row = get_left4bit(index);
+        int col = get_right4bit(index);
         return S2[row][col];
     }
 
@@ -305,15 +297,18 @@ namespace AES{
     }
 
     void aes:: de_aes(){
+
         extend_key(this->key);
         int c_array[4][4];
         for(int i=0;i<this->len;i+=16){
+
             convert_to_int_array(this->str + i, c_array);
 
             add_round_key(c_array, 10);
 
             int w_array[4][4];
             for(int j=9;j>=1;j--){
+
                 de_sub_bytes(c_array);
 
                 de_shift_rows(c_array);

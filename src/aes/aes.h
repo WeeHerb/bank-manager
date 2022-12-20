@@ -1,6 +1,7 @@
 #pragma once
 #include<cstdlib>
 
+
 namespace AES{
     class aes{
         private:
@@ -40,7 +41,7 @@ namespace AES{
 
         char *key;
         char *str;
-        unsigned long long int len;
+        unsigned long long len;
 
         int w[44];
 

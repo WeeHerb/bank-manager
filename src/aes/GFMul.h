@@ -4,7 +4,6 @@ namespace AES{
     class GFMul{
         public:
         explicit GFMul(){};
-        //int GFMuln(int n,int s);
         int GFMuln(int a,int b) {
             int p = 0;
             int hi_bit_set;
