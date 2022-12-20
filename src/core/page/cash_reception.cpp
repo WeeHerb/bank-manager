@@ -50,6 +50,9 @@ void servicePage(tui::Term &term, Customer &item) {
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入存款", true,
                                                                                            L"存入", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
+                                        if(name->empty()){
+                                            name = "存款";
+                                        }
                                         long double v = std::stold(value.value());
                                         item.amountChange.push_back(Transaction{
                                                 (long long) time(nullptr),
@@ -70,6 +73,9 @@ void servicePage(tui::Term &term, Customer &item) {
                                     auto value = inputbox<char, wchar_t, wchar_t, wchar_t>(term, L"请输入取款", true,
                                                                                            L"去出", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
+                                        if(name->empty()){
+                                            name = "取款";
+                                        }
                                         long double v = std::stold(value.value());
                                         item.amountChange.push_back(Transaction{
                                                 (long long) time(nullptr),
@@ -91,6 +97,9 @@ void servicePage(tui::Term &term, Customer &item) {
                                                                                            true,
                                                                                            L"贷款", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
+                                        if(name->empty()){
+                                            name = "贷款";
+                                        }
                                         long double v = std::stold(value.value());
                                         item.debitChange.push_back(Transaction{
                                                 (long long) time(nullptr),
@@ -111,6 +120,9 @@ void servicePage(tui::Term &term, Customer &item) {
                                                                                            true,
                                                                                            L"还款", true, L"取消");
                                     if (value.has_value() && name.has_value()) {
+                                        if(name->empty()){
+                                            name = "还款";
+                                        }
                                         long double v = std::stold(value.value());
                                         item.debitChange.push_back(Transaction{
                                                 (long long) time(nullptr),
