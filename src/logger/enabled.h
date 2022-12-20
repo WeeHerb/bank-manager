@@ -7,7 +7,8 @@
 
 // LoggerEnableTag("Canvas")
 // LoggerEnableTag("Widget")
-LoggerEnableTag("Term")
+//LoggerEnableTag("Term")
 // LoggerEnableTag("Context")
 // LoggerEnableTag("TextField")
-LoggerEnableTag("TableBuilder")
+//LoggerEnableTag("TableBuilder")
+LoggerEnableTag("AES")

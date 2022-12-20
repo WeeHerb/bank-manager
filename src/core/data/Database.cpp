@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "Database.h"
 #include "aes/aes.h"
+#include "logger/logger.h"
 #include "core/util.h"
 
 const static char *customerFile = "customer.db";
@@ -43,14 +44,13 @@ Database *Database::getInstance() {
             std::string input;
             char ch;
             while (fileIn.get(ch)) {
+                ch-=10;
                 input += ch;
             }
             fileIn.close();
             if (input.empty()) {
                 break;
             }
-            AES::aes de(aesKey, input.data());
-            de.de_aes();
 
             std::stringstream customer(input);
 
@@ -214,11 +214,17 @@ void Database::flush() {
         if (buff.size() % 16 != 0) {
             buff.resize((buff.size() / 16 + 1) * 16);
         }
+        LoggerPrinter("AES") << buff;
         char *origin_data = buff.data();
-        AES::aes en(aesKey, origin_data);
-        en.run_aes();
+        for(int i=0;i<buff.size();i++){
+            buff[i]=buff[i]+10;
+        }
+//        AES::aes en(aesKey,buff.data(),buff.size());
+//        en.run_aes();
         std::ofstream customer(customerFile);
         customer << origin_data;
+        LoggerPrinter("AES") << origin_data;
+        LoggerFlush();
         customer.close();
     }
 

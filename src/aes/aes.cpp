@@ -4,13 +4,13 @@
 #include<iostream>
 
 namespace AES{
-    aes:: aes(const char *key,char *str){
+    aes:: aes(const char *key,char *str,unsigned long long len){
+        this->len=len;
         this->key=new char[16+1];
         for(int i=0;i<16;i++){
             this->key[i]=key[i];
         }this->key[16]='\0';
         this->str=str;
-        this->len=strlen(this->str);
     }
     
     int aes:: get_int_from_char(char c){
@@ -70,41 +70,25 @@ namespace AES{
         0x1b000000, 0x36000000 };
         split_int_to_array(num, num_array);
 
-        //for(int i=0;i<4;i++) std:: cout<<"split:"<<num_array[i]<<std:: endl;
+        left_loop4int(num_array, 1);
 
-        left_loop4int(num_array, 1);//字循环
-
-        //for(int i=0;i<4;i++) std:: cout<<"left_loop:"<<num_array[i]<<std:: endl;
-
-        //字节代换
         for(int i = 0; i < 4; i++)
             num_array[i] = get_num_from_sbox(num_array[i]);
 
-        //for(int i=0;i<4;i++) std:: cout<<"get_num:"<<num_array[i]<<std:: endl;
-
         auto merge_array_to_int = [num_array]()->int{
-           // std:: cout<<num_array[0]<<" "<<num_array[1]<<" "<<num_array[2]<<" "<<num_array[3]<<std:: endl;
             int one = num_array[0] << 24;
             int two = num_array[1] << 16;
             int three = num_array[2] << 8;
             int four = num_array[3];
-            //std:: cout<<num_array[0]<<" "<<num_array[1]<<" "<<num_array[2]<<" "<<num_array[3]<<std:: endl;
-            //std:: cout<<" one "<<one<<" two "<<two<<" three "<<three<<" four "<<four<<std:: endl;
             return one | two | three | four;
         };
 
         int result = merge_array_to_int();
 
-        // std:: cout<<"result: "<<result<<std:: endl;
-        // int out=result ^ Rcon[round];
-        // std:: cout<<"T: "<<out<<std:: endl;
-
         return result ^ Rcon[round];
     }
     void aes:: extend_key(char *key){
 
-        //std:: cout<<"aes key : "<<key<<std:: endl;
-        //ok
         for(int i = 0; i < 4; i++)
             w[i] = get_word_from_str(key + i * 4);
 
@@ -116,10 +100,6 @@ namespace AES{
                 w[i] = w[i - 4] ^ w[i - 1];
             }
         }
-
-        // std:: cout<<std:: endl;
-        // for(int i=0;i<44;i++) std:: cout<<"w: "<<w[i]<<std::endl;
-        // std:: cout<<std:: endl;
 
     }
 
@@ -137,23 +117,12 @@ namespace AES{
         int warray[4];
         for(int i = 0; i < 4; i++) {
 
-            //std:: cout<<w[round*4+i]<<std:: endl;
-
             split_int_to_array(w[ round * 4 + i], warray);
-
-            // std:: cout<<"\n";
-            // for(int j=0;j<4;j++) std:: cout<<"j: "<<i<<" wa: "<<warray[j]<<" ";
-            // std:: cout<<"\n";
 
             for(int j = 0; j < 4; j++) {
                 array[j][i] = array[j][i] ^ warray[j];
             }
         }
-        // for(int i=0;i<4;i++){
-        //     for(int j=0;j<4;j++){
-        //         std:: cout<<array[i][j]<<" ";
-        //     }std:: cout<<std:: endl;
-        // }
     }
 
     void aes:: sub_bytes(int array[4][4]){
@@ -209,10 +178,7 @@ namespace AES{
         }
     }
     void aes:: run_aes(){
-        // std:: cout<<"I am run_aes\n";
-        // std:: cout<<"len : "<<this->len<<std:: endl;
-        // std:: cout<<"this is str:"<<this->str<<std:: endl;
-        extend_key(this->key);//ok
+        extend_key(this->key);
         int p_array[4][4];
         for(int i=0;i<this->len;i+=16){
             convert_to_int_array(this->str + i, p_array);
@@ -225,14 +191,6 @@ namespace AES{
                 shift_rows(p_array);
 
                 mix_columns(p_array);
-
-                // std::cout<<"i: "<<j<<std:: endl;
-                // for(int i=0;i<4;i++){
-                //     for(int j=0;j<4;j++){
-                //         std:: cout<<p_array[i][j]<<" ";
-                //     }
-                //     std:: cout<<std:: endl;
-                // }
 
                 add_round_key(p_array, j);
 
@@ -343,17 +301,10 @@ namespace AES{
             for(int j = 0; j < 4; j++){
                 a_array[i][j] = a_array[i][j] ^ b_array[i][j];
             }
-        }  
-        // for(int i=0;i<4;i++){
-        //     for(int j=0;j<4;j++){
-        //         std::cout<<a_array[i][j]<<" ";
-        //     }
-        //     std:: cout<<"\n";
-        // }std:: cout<<"\n";
+        }
     }
 
     void aes:: de_aes(){
-        //std:: cout<<"I am de_aes, now str is:"<<this->str<<std:: endl;
         extend_key(this->key);
         int c_array[4][4];
         for(int i=0;i<this->len;i+=16){
@@ -381,6 +332,5 @@ namespace AES{
 
             convert_array_to_str(c_array,this->str+i);
         }
-        //std:: cout<<"de_aes is finished ans :"<<this->str<<std:: endl;
     }
 }
