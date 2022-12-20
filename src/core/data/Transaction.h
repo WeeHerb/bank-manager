@@ -14,14 +14,12 @@ struct Transaction {
     long double offset;
 
     [[nodiscard]] std::string timeStr() const {
-        int ms = int(timestamp % 1000);
-        auto tick = (time_t) (timestamp / 1000);
+        auto tick = (time_t) timestamp;
         struct tm tm{};
         char s[40];
         tm = *localtime(&tick);
         strftime(s, sizeof(s), "%Y-%m-%d %H:%M:%S", &tm);
         std::string str(s);
-        str = str + " " + std::to_string(ms);
         return str;
     }
     bool operator<(const Transaction& rhs) const {
