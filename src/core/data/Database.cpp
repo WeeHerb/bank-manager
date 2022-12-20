@@ -4,6 +4,9 @@
 #include <sstream>
 #include <unistd.h>
 #include <map>
+#include <codecvt>
+#include<locale>
+#include <stringapiset.h>
 #include "Database.h"
 #include "aes/aes.h"
 #include "logger/logger.h"
@@ -155,6 +158,24 @@ std::string to_string(const T &t) {
     oss << t;
     return oss.str();
 }
+std:: string utf8_to_gb2312(const char* utf8) {
+    using std:: string;
+    int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+    wchar_t *wstr = new wchar_t[len + 1];
+    memset(wstr, 0, len + 1);
+    MultiByteToWideChar(CP_UTF8, 0, utf8, -1, wstr, len);
+    len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+    char *str = new char[len + 1];
+    memset(str, 0, len + 1);
+    WideCharToMultiByte(CP_ACP, 0, wstr, -1, str, len, NULL, NULL);
+    string strTemp = str;
+    if (wstr)
+        delete[] wstr;
+    if (str)
+        delete[] str;
+
+    return strTemp;
+}
 
 void saveDoc() {
     mkdir("doc");
@@ -162,7 +183,8 @@ void saveDoc() {
     char UTF_8BOM[4] = {char(0xEF), char(0xBB), char(0xBF), char(0)};
     std::map<std::string, std::ofstream> files;
     for (auto &item: db->customer) {
-        std::string filename = "doc/" + item.name + item.cardID + ".csv";
+
+        std::string filename = "doc/" + utf8_to_gb2312(item.name.data()) + "-" + utf8_to_gb2312(item.id.data()) + ".csv";
         if (!files.count(filename)) {
             files[filename] = std::ofstream(filename);
             files[filename] << UTF_8BOM;
@@ -188,7 +210,7 @@ void saveDoc() {
             file << i.timeStr() << ", " << i.name << ", " << i.offset << std::endl;
         }
     }
-    for(auto &[path, stream]: files){
+    for (auto &[path, stream]: files) {
         stream.close();
     }
 
